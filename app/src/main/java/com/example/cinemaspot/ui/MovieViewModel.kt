@@ -3,7 +3,6 @@ package com.example.cinemaspot.ui
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.cinemaspot.data.remote.ApiService
 import com.example.cinemaspot.domain.usecase.GetRecentMoviesUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
