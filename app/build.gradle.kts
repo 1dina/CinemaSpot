@@ -73,6 +73,8 @@ dependencies {
     //Retrofit
     implementation (libs.converter.gson)
     implementation (libs.retrofit)
+    implementation (libs.logging.interceptor)
+
     //coroutines
     implementation(libs.kotlinx.coroutines.android)
     //hilt
