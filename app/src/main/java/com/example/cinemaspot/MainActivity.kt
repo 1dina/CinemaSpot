@@ -36,6 +36,9 @@ class MainActivity : ComponentActivity() {
 fun MovieScreen(movieViewModel: MovieViewModel) {
     LaunchedEffect(Unit) {
         movieViewModel.fetchTopRatedMovies(page = 1)
+        movieViewModel.fetchNowPlayingMovies(1)
+        movieViewModel.fetchPopularMovies(1)
+        movieViewModel.fetchUpComingMovies(1)
     }
 
     Scaffold(

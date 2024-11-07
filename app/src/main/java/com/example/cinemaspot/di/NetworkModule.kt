@@ -28,7 +28,7 @@ object NetworkModule {
     @Singleton
     fun provideRetrofitInstance(gson: Gson): Retrofit {
         val logging = HttpLoggingInterceptor()
-        logging.setLevel(HttpLoggingInterceptor.Level.BODY) // Logs request and response body
+        logging.setLevel(HttpLoggingInterceptor.Level.BODY)
 
         val client = OkHttpClient.Builder()
             .addInterceptor(logging)

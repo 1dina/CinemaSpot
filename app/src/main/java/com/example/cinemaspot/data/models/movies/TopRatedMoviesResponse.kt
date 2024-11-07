@@ -1,4 +1,5 @@
-package com.example.cinemaspot.data.models
+package com.example.cinemaspot.data.models.movies
+
 
 data class TopRatedMoviesResponse(
     val page: Int,
