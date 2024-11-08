@@ -76,7 +76,7 @@ class MovieViewModel @Inject constructor(
                     Log.e("MovieViewModel4", "Failed to fetch movies: ${response.errorBody()?.string()}")
                 }
             } catch (e: Exception) {
-                Log.e("MovieViewModel4", "Error fetching movies", e)
+                Log.e("MovieViewModel4", "Error fetching movies :", e)
             }
         }
     }
