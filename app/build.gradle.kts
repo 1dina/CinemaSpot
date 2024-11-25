@@ -81,5 +81,13 @@ dependencies {
     implementation (libs.hilt.android)
     kapt (libs.hilt.android.compiler)
 
+    //coil
+    implementation(libs.coil.compose)
+    implementation(libs.coil.network.okhttp)
+
+    //shimmer
+    implementation (libs.accompanist.placeholder)
+
+
 
 }
