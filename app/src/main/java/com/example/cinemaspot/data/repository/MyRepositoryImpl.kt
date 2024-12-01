@@ -1,6 +1,7 @@
 package com.example.cinemaspot.data.repository
 
 import com.example.cinemaspot.data.Constants
+import com.example.cinemaspot.data.models.movies.MovieDetailsResponse
 import com.example.cinemaspot.data.models.movies.NowPlayingMoviesResponse
 import com.example.cinemaspot.data.models.movies.PopularMoviesResponse
 import com.example.cinemaspot.data.models.movies.TopRatedMoviesResponse
@@ -22,4 +23,7 @@ class MyRepositoryImpl @Inject constructor(private val apiService: ApiService) :
 
     override suspend fun fetchUpComingMovies(page: Int): Response<UpComingMoviesResponse> =
         apiService.fetchUpComingMovies(Constants.API_KEY,page=page)
+
+    override suspend fun fetchMovieDetails(movieId: Int): Response<MovieDetailsResponse> =
+        apiService.fetchMovieDetails(movieId)
 }

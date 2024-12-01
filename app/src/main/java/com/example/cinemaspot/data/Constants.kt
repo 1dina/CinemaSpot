@@ -7,4 +7,5 @@ object Constants {
     const val NOW_PLAYING_ENDPOINT = "3/movie/now_playing"
     const val POPULAR_MOVIES_ENDPOINT = "3/movie/popular"
     const val UP_COMING_MOVIES_ENDPOINT = "3/movie/upcoming"
+    const val MOVIE_DETAILS_ENDPOINT = "3/movie/{movie_id}"
 }

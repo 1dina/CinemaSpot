@@ -80,6 +80,9 @@ dependencies {
     //hilt
     implementation (libs.hilt.android)
     kapt (libs.hilt.android.compiler)
+    // Paging Compose
+    implementation ("com.google.accompanist:accompanist-pager:0.13.0")
+    implementation ("com.google.accompanist:accompanist-pager-indicators:0.13.0")
 
 
 }

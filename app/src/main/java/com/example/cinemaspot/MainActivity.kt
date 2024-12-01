@@ -13,6 +13,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import com.example.cinemaspot.ui.MovieViewModel
+import com.example.cinemaspot.ui.screens.details.DetailsViewModel
 import com.example.cinemaspot.ui.theme.CinemaSpotTheme
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -21,10 +22,11 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val movieViewModel: MovieViewModel by viewModels()
+        val detailsViewModel: DetailsViewModel by viewModels()
         enableEdgeToEdge()
         setContent {
             CinemaSpotTheme {
-                MovieScreen(movieViewModel = movieViewModel)
+                MovieScreen(movieViewModel = movieViewModel , detailsViewModel = detailsViewModel)
 
             }
         }
@@ -33,12 +35,13 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-fun MovieScreen(movieViewModel: MovieViewModel) {
+fun MovieScreen(movieViewModel: MovieViewModel , detailsViewModel: DetailsViewModel) {
     LaunchedEffect(Unit) {
         movieViewModel.fetchTopRatedMovies(page = 1)
         movieViewModel.fetchNowPlayingMovies(1)
         movieViewModel.fetchPopularMovies(1)
         movieViewModel.fetchUpComingMovies(1)
+        detailsViewModel.getMovieDetails(1)
     }
 
     Scaffold(
