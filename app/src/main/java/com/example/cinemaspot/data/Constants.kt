@@ -7,4 +7,5 @@ object Constants {
     const val NOW_PLAYING_ENDPOINT = "3/movie/now_playing"
     const val POPULAR_MOVIES_ENDPOINT = "3/movie/popular"
     const val UP_COMING_MOVIES_ENDPOINT = "3/movie/upcoming"
+    const val BASE_IMAGE_URL = "https://image.tmdb.org/t/p/w500/"
 }
