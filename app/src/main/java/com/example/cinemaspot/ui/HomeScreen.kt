@@ -1,14 +1,16 @@
 package com.example.cinemaspot.ui
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
@@ -36,29 +38,23 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil3.compose.AsyncImage
+import coil3.request.ImageRequest
+import coil3.request.crossfade
 import com.example.cinemaspot.R
 import com.example.cinemaspot.data.Constants.BASE_IMAGE_URL
 import com.example.cinemaspot.data.models.movies.Result
 import com.example.cinemaspot.ui.theme.Poppins
 
 @Composable
-@Preview(showBackground = true)
-fun HomeScreen(
-    movieViewModel: MovieViewModel = MovieViewModel(
-        getRecentMoviesUseCase = FakeGetTopRatedMoviesUseCase(),
-        getNowPlayingMoviesUseCase = FakeGetNowPlayingMoviesUseCase(),
-        getPopularMoviesUseCase = FakeGetPopularMoviesUseCase(),
-        getUpComingMoviesUseCase = FakeGetUpComingMoviesUseCase(),
-
-        )
-) {
+fun HomeScreen(movieViewModel: MovieViewModel) {
 
     val topRatedMovies by movieViewModel.topRatedMovies.collectAsState()
     val nowPlayingMovies by movieViewModel.nowPlayingMovies.collectAsState()
@@ -80,7 +76,6 @@ fun HomeScreen(
         topFiveMovies
     )
 
-
 }
 
 @Composable
@@ -96,8 +91,6 @@ private fun HomeScreenContent(
 
     val tabTitles = listOf("Now Playing", "Upcoming", "Top Rated", "Popular")
 
-
-
     Surface(
         modifier = Modifier.fillMaxSize(),
         color = Color(0xFF242A32)
@@ -106,52 +99,61 @@ private fun HomeScreenContent(
             modifier = Modifier
                 .fillMaxSize()
         ) {
-            TopHeader()
-            Spacer(modifier = Modifier.height(24.dp))
             if (isLoading) {
-                LoadingIndicator()
+                LoadingScreen()
             } else {
+                TopHeader()
+                Spacer(modifier = Modifier.height(24.dp))
                 MovieList(topFiveMovies)
-            }
-            Spacer(modifier = Modifier.height(32.dp))
-            Column {
-                CustomTabLayout(
-                    modifier = Modifier.fillMaxWidth(),
-                    tabTitles = tabTitles,
-                    selectedTabIndex = selectedCategoryIndex
-                ) {
-                    selectedCategoryIndex = it
-                }
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .align(Alignment.CenterHorizontally)
-                        .padding(horizontal = 18.dp)
-                        .padding(top = 20.dp)
-                ) {
-                    when (selectedCategoryIndex) {
-                        0 -> MoviesGrid(movies = nowPlayingMovies, isLoading)
-                        1 -> MoviesGrid(movies = upcomingMovies, isLoading)
-                        2 -> MoviesGrid(movies = topRatedMovies, isLoading)
-                        3 -> MoviesGrid(movies = popularMovies, isLoading)
+                Spacer(modifier = Modifier.height(32.dp))
+                Column {
+                    CustomTabLayout(
+                        modifier = Modifier.fillMaxWidth(),
+                        tabTitles = tabTitles,
+                        selectedTabIndex = selectedCategoryIndex
+                    ) {
+                        selectedCategoryIndex = it
                     }
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .align(Alignment.CenterHorizontally)
+                            .padding(horizontal = 18.dp)
+                            .padding(top = 20.dp)
+                    ) {
+                        when (selectedCategoryIndex) {
+                            0 -> MoviesGrid(movies = nowPlayingMovies)
+                            1 -> MoviesGrid(movies = upcomingMovies)
+                            2 -> MoviesGrid(movies = topRatedMovies)
+                            3 -> MoviesGrid(movies = popularMovies)
+                        }
+                    }
+
                 }
 
             }
-
         }
     }
 }
 
 @Composable
-private fun LoadingIndicator() {
-    Box(
-        modifier = Modifier.fillMaxWidth(),
-        contentAlignment = Alignment.Center
+private fun LoadingScreen() {
+    Column(
+        modifier = Modifier.fillMaxSize(),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        CircularProgressIndicator(color = Color.White, modifier = Modifier.size(64.dp))
+        Text(
+            text = "Fetching data from server",
+            color = Color.White,
+            style = TextStyle(
+                fontFamily = Poppins, fontWeight = FontWeight.Bold, fontSize = 18.sp
+            )
+        )
+        CircularProgressIndicator(modifier = Modifier.padding(top = 16.dp), color = Color.White)
     }
 }
+
 
 @Composable
 private fun MovieList(topFiveMovies: List<Result>) {
@@ -165,27 +167,14 @@ private fun MovieList(topFiveMovies: List<Result>) {
 }
 
 @Composable
-fun MoviesGrid(movies: List<Result>, isLoading: Boolean) {
-    if (isLoading) {
-        LoadingIndicator()
-    } else if (movies.isEmpty()) {
-        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-            Text(
-                text = "No movies found",
-                color = Color.White,
-                style = TextStyle(
-                    fontFamily = Poppins, fontWeight = FontWeight.Bold, fontSize = 18.sp
-                )
-            )
-        }
-    } else {
-        LazyVerticalGrid(
-            columns = GridCells.Fixed(3),
-            modifier = Modifier.fillMaxSize(),
-        ) {
-            items(movies) { movie ->
-                MovieCard(movie)
-            }
+fun MoviesGrid(movies: List<Result>) {
+
+    LazyVerticalGrid(
+        columns = GridCells.Fixed(3),
+        modifier = Modifier.fillMaxSize(),
+    ) {
+        items(movies) { movie ->
+            MovieCard(movie)
         }
     }
 }
@@ -205,20 +194,30 @@ fun MovieCardWithNumber(
         5 -> R.drawable.number_five
         else -> R.drawable.ic_launcher_background
     }
+
     Box(
         modifier = Modifier
             .height(210.dp)
             .padding(horizontal = 16.dp)
             .clip(shape = RoundedCornerShape(16.dp))
     ) {
+
         AsyncImage(
-            model = imgUrl,
+            model = ImageRequest.Builder(LocalContext.current)
+                .data(imgUrl)
+                .crossfade(true)
+                .build(),
+            placeholder = painterResource(R.drawable.ic_placeholder),
             contentDescription = "Movie Poster",
             modifier = Modifier
-                .fillMaxSize()
+                .fillMaxHeight()
+                .width(144.dp)
                 .padding(bottom = 20.dp, start = 12.dp)
-                .clip(shape = RoundedCornerShape(16.dp))
+                .clip(shape = RoundedCornerShape(16.dp)),
+            contentScale = ContentScale.Crop,
         )
+
+
         Icon(
             painter = painterResource(id = vectorResource),
             contentDescription = "Number Icon",
@@ -233,14 +232,21 @@ fun MovieCardWithNumber(
 @Composable
 fun MovieCard(movie: Result) {
     val imgUrl = BASE_IMAGE_URL + movie.poster_path
+
     AsyncImage(
-        model = imgUrl,
+        model = ImageRequest.Builder(LocalContext.current)
+            .data(imgUrl)
+            .crossfade(true)
+            .build(),
+        placeholder = painterResource(R.drawable.ic_placeholder),
         contentDescription = "Movie Poster",
         modifier = Modifier
             .height(144.dp)
+            .width(100.dp)
             .padding(horizontal = 6.dp)
             .padding(bottom = 18.dp)
-            .clip(shape = RoundedCornerShape(16.dp))
+            .clip(shape = RoundedCornerShape(16.dp)),
+        contentScale = ContentScale.Crop
     )
 }
 

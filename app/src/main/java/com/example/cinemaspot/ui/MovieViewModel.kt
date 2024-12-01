@@ -43,12 +43,10 @@ class MovieViewModel @Inject constructor(
     val topFiveMovies: StateFlow<List<Result>> = _topFiveMovies
 
     fun fetchAllMovies() {
-        viewModelScope.launch {
-            fetchTopRatedMovies(1)
-            fetchPopularMovies(1)
-            fetchUpComingMovies(1)
-            fetchNowPlayingMovies(1)
-        }
+        fetchTopRatedMovies(1)
+        fetchPopularMovies(1)
+        fetchUpComingMovies(1)
+        fetchNowPlayingMovies(1)
     }
 
 
