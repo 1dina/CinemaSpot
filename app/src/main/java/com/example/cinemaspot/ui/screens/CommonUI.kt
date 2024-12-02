@@ -12,12 +12,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.cinemaspot.R
+import com.example.cinemaspot.ui.theme.Poppins
 
 @Composable
 fun HeaderUI(headerTitle: String,
@@ -40,11 +42,12 @@ fun HeaderUI(headerTitle: String,
 
         Text(
             text = headerTitle,
-            fontSize = 20.sp,
             modifier = Modifier
                 .align(Alignment.Center),
             textAlign = TextAlign.Center,
-            fontWeight = FontWeight.Medium
+            style = TextStyle(
+                fontFamily = Poppins, fontWeight = FontWeight.Medium, fontSize = 18.sp
+            )
         )
     }
 }
@@ -74,10 +77,12 @@ fun HeaderUIWithBookmark(
 
         Text(
             text = headerTitle,
-            fontSize = 20.sp,
-            fontWeight = FontWeight.Medium,
             color = Color.White,
             modifier = Modifier.align(Alignment.Center)
+            ,style = TextStyle(
+                fontFamily = Poppins, fontWeight = FontWeight.Medium, fontSize = 18.sp
+            )
+
         )
 
         Icon(

@@ -3,7 +3,6 @@ package com.example.cinemaspot.ui.screens.wishList
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
@@ -27,10 +26,10 @@ fun WishListScreen( modifier: Modifier = Modifier) {
 
   }
 }
-@Composable
-fun WishListItem(modifier: Modifier) {
-
-}
+//@Composable
+//fun WishListItem(modifier: Modifier) {
+//
+//}
 
 @Preview(showBackground = true)
 @Composable

@@ -50,7 +50,7 @@ class MovieViewModel @Inject constructor(
     }
 
 
-    fun fetchTopRatedMovies(page: Int) {
+    private fun fetchTopRatedMovies(page: Int) {
         viewModelScope.launch(Dispatchers.IO) {
             try {
                 _isLoading.value = true
@@ -78,7 +78,7 @@ class MovieViewModel @Inject constructor(
         return movies.take(5)
     }
 
-    fun fetchNowPlayingMovies(page: Int) {
+    private fun fetchNowPlayingMovies(page: Int) {
         viewModelScope.launch(Dispatchers.IO) {
             try {
                 val response = getNowPlayingMoviesUseCase.getNowPlayingMovies(page = page)
@@ -97,7 +97,7 @@ class MovieViewModel @Inject constructor(
         }
     }
 
-    fun fetchPopularMovies(page: Int) {
+    private fun fetchPopularMovies(page: Int) {
         viewModelScope.launch(Dispatchers.IO) {
             try {
                 val response = getPopularMoviesUseCase.getPopularMovies(page = page)
@@ -116,7 +116,7 @@ class MovieViewModel @Inject constructor(
         }
     }
 
-    fun fetchUpComingMovies(page: Int) {
+    private fun fetchUpComingMovies(page: Int) {
         viewModelScope.launch(Dispatchers.IO) {
             try {
                 val response = getUpComingMoviesUseCase.getUpComingMovies(page = page)
