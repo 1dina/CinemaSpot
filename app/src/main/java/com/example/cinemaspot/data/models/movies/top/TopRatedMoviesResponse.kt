@@ -1,4 +1,6 @@
-package com.example.cinemaspot.data.models.movies
+package com.example.cinemaspot.data.models.movies.top
+
+import com.example.cinemaspot.data.models.movies.Result
 
 
 data class TopRatedMoviesResponse(

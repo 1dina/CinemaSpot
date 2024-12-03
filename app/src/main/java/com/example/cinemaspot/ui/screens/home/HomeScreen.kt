@@ -1,4 +1,4 @@
-package com.example.cinemaspot.ui
+package com.example.cinemaspot.ui.screens.home
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -52,6 +52,8 @@ import coil3.request.crossfade
 import com.example.cinemaspot.R
 import com.example.cinemaspot.data.Constants.BASE_IMAGE_URL
 import com.example.cinemaspot.data.models.movies.Result
+import com.example.cinemaspot.ui.routes.AppRoutes
+import com.example.cinemaspot.ui.common.CustomTabLayout
 import com.example.cinemaspot.ui.theme.Poppins
 
 @Composable

@@ -1,4 +1,4 @@
-package com.example.cinemaspot.ui
+package com.example.cinemaspot.ui.screens.home
 
 import android.util.Log
 import androidx.lifecycle.ViewModel

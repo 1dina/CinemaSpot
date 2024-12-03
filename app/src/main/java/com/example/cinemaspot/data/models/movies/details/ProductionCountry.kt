@@ -1,4 +1,4 @@
-package com.example.cinemaspot.data.models.movies
+package com.example.cinemaspot.data.models.movies.details
 
 data class ProductionCountry(
     val iso_3166_1: String,

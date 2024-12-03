@@ -1,4 +1,4 @@
-package com.example.cinemaspot.ui
+package com.example.cinemaspot.ui.common
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -10,6 +10,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import com.example.cinemaspot.ui.screens.home.TabText
 
 @Composable
 fun CustomTabLayout(

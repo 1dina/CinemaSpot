@@ -1,12 +1,12 @@
 package com.example.cinemaspot.data.remote
 
 import com.example.cinemaspot.data.Constants
-import com.example.cinemaspot.data.models.movies.MovieDetailsResponse
+import com.example.cinemaspot.data.models.movies.details.MovieDetailsResponse
 import com.example.cinemaspot.data.models.movies.reviews.MovieReviewsResponse
-import com.example.cinemaspot.data.models.movies.NowPlayingMoviesResponse
-import com.example.cinemaspot.data.models.movies.PopularMoviesResponse
-import com.example.cinemaspot.data.models.movies.TopRatedMoviesResponse
-import com.example.cinemaspot.data.models.movies.UpComingMoviesResponse
+import com.example.cinemaspot.data.models.movies.playing.NowPlayingMoviesResponse
+import com.example.cinemaspot.data.models.movies.popular.PopularMoviesResponse
+import com.example.cinemaspot.data.models.movies.top.TopRatedMoviesResponse
+import com.example.cinemaspot.data.models.movies.coming.UpComingMoviesResponse
 import com.example.cinemaspot.data.models.movies.cast.MovieCastResponse
 import retrofit2.Response
 import retrofit2.http.GET

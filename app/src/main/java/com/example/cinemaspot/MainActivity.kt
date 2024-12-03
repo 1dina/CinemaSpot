@@ -5,7 +5,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.navigation.compose.rememberNavController
-import com.example.cinemaspot.ui.AppNavGraph
+import com.example.cinemaspot.ui.routes.AppNavGraph
 import com.example.cinemaspot.ui.theme.CinemaSpotTheme
 import dagger.hilt.android.AndroidEntryPoint
 

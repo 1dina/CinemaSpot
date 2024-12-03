@@ -1,4 +1,4 @@
-package com.example.cinemaspot.ui
+package com.example.cinemaspot.ui.routes
 
 import androidx.compose.runtime.Composable
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -10,6 +10,8 @@ import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import com.example.cinemaspot.ui.screens.details.DetailsScreen
 import com.example.cinemaspot.ui.screens.details.DetailsViewModel
+import com.example.cinemaspot.ui.screens.home.HomeScreen
+import com.example.cinemaspot.ui.screens.home.MovieViewModel
 
 object AppRoutes {
     const val HOME = "home"
