@@ -1,5 +1,6 @@
 package com.example.cinemaspot.ui
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -54,7 +55,7 @@ import com.example.cinemaspot.data.models.movies.Result
 import com.example.cinemaspot.ui.theme.Poppins
 
 @Composable
-fun HomeScreen(movieViewModel: MovieViewModel) {
+fun HomeScreen(movieViewModel: MovieViewModel, onNavigationCallBack: (String, Int) -> Unit) {
 
     val topRatedMovies by movieViewModel.topRatedMovies.collectAsState()
     val nowPlayingMovies by movieViewModel.nowPlayingMovies.collectAsState()
@@ -64,17 +65,13 @@ fun HomeScreen(movieViewModel: MovieViewModel) {
     val topFiveMovies by movieViewModel.topFiveMovies.collectAsState()
 
     LaunchedEffect(Unit) {
-        movieViewModel.fetchAllMovies()
+        if (topRatedMovies.isEmpty() && nowPlayingMovies.isEmpty() && upcomingMovies.isEmpty()
+            && popularMovies.isEmpty()) movieViewModel.fetchAllMovies()
     }
 
     HomeScreenContent(
-        isLoading,
-        topRatedMovies,
-        nowPlayingMovies,
-        upcomingMovies,
-        popularMovies,
-        topFiveMovies
-    )
+        isLoading, topRatedMovies, nowPlayingMovies, upcomingMovies, popularMovies, topFiveMovies
+    ) { route, movieId -> onNavigationCallBack(route, movieId) }
 
 }
 
@@ -85,26 +82,25 @@ private fun HomeScreenContent(
     nowPlayingMovies: List<Result>,
     upcomingMovies: List<Result>,
     popularMovies: List<Result>,
-    topFiveMovies: List<Result>
+    topFiveMovies: List<Result>,
+    onAnyItemClick: (String, Int) -> Unit
 ) {
     var selectedCategoryIndex by remember { mutableIntStateOf(0) }
 
     val tabTitles = listOf("Now Playing", "Upcoming", "Top Rated", "Popular")
 
     Surface(
-        modifier = Modifier.fillMaxSize(),
-        color = Color(0xFF242A32)
+        modifier = Modifier.fillMaxSize(), color = Color(0xFF242A32)
     ) {
         Column(
-            modifier = Modifier
-                .fillMaxSize()
+            modifier = Modifier.fillMaxSize()
         ) {
             if (isLoading) {
                 LoadingScreen()
             } else {
                 TopHeader()
                 Spacer(modifier = Modifier.height(24.dp))
-                MovieList(topFiveMovies)
+                MovieList(topFiveMovies) { id -> onAnyItemClick(AppRoutes.DETAILS, id) }
                 Spacer(modifier = Modifier.height(32.dp))
                 Column {
                     CustomTabLayout(
@@ -122,10 +118,29 @@ private fun HomeScreenContent(
                             .padding(top = 20.dp)
                     ) {
                         when (selectedCategoryIndex) {
-                            0 -> MoviesGrid(movies = nowPlayingMovies)
-                            1 -> MoviesGrid(movies = upcomingMovies)
-                            2 -> MoviesGrid(movies = topRatedMovies)
-                            3 -> MoviesGrid(movies = popularMovies)
+                            0 -> MoviesGrid(movies = nowPlayingMovies) { id ->
+                                onAnyItemClick(
+                                    AppRoutes.DETAILS, id
+                                )
+                            }
+
+                            1 -> MoviesGrid(movies = upcomingMovies) { id ->
+                                onAnyItemClick(
+                                    AppRoutes.DETAILS, id
+                                )
+                            }
+
+                            2 -> MoviesGrid(movies = topRatedMovies) { id ->
+                                onAnyItemClick(
+                                    AppRoutes.DETAILS, id
+                                )
+                            }
+
+                            3 -> MoviesGrid(movies = popularMovies) { id ->
+                                onAnyItemClick(
+                                    AppRoutes.DETAILS, id
+                                )
+                            }
                         }
                     }
 
@@ -144,9 +159,7 @@ private fun LoadingScreen() {
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text(
-            text = "Fetching data from server",
-            color = Color.White,
-            style = TextStyle(
+            text = "Fetching data from server", color = Color.White, style = TextStyle(
                 fontFamily = Poppins, fontWeight = FontWeight.Bold, fontSize = 18.sp
             )
         )
@@ -156,33 +169,36 @@ private fun LoadingScreen() {
 
 
 @Composable
-private fun MovieList(topFiveMovies: List<Result>) {
+private fun MovieList(topFiveMovies: List<Result>, onItemClick: (Int) -> Unit) {
     LazyRow(
         contentPadding = PaddingValues(start = 8.dp)
     ) {
         itemsIndexed(topFiveMovies) { index, movie ->
-            MovieCardWithNumber(movie, index = index + 1)
+            MovieCardWithNumber(movie, index = index + 1) { id ->
+                onItemClick(id)
+            }
         }
     }
 }
 
 @Composable
-fun MoviesGrid(movies: List<Result>) {
+fun MoviesGrid(movies: List<Result>, onItemClick: (Int) -> Unit) {
 
     LazyVerticalGrid(
         columns = GridCells.Fixed(3),
         modifier = Modifier.fillMaxSize(),
     ) {
         items(movies) { movie ->
-            MovieCard(movie)
+            MovieCard(movie) { id ->
+                onItemClick(id)
+            }
         }
     }
 }
 
 @Composable
 fun MovieCardWithNumber(
-    movie: Result,
-    index: Int,
+    movie: Result, index: Int, onItemClick: (Int) -> Unit
 ) {
 
     val imgUrl = BASE_IMAGE_URL + movie.poster_path
@@ -195,18 +211,14 @@ fun MovieCardWithNumber(
         else -> R.drawable.ic_launcher_background
     }
 
-    Box(
-        modifier = Modifier
-            .height(210.dp)
-            .padding(horizontal = 16.dp)
-            .clip(shape = RoundedCornerShape(16.dp))
-    ) {
+    Box(modifier = Modifier
+        .height(210.dp)
+        .padding(horizontal = 16.dp)
+        .clip(shape = RoundedCornerShape(16.dp))
+        .clickable { onItemClick(movie.id) }) {
 
         AsyncImage(
-            model = ImageRequest.Builder(LocalContext.current)
-                .data(imgUrl)
-                .crossfade(true)
-                .build(),
+            model = ImageRequest.Builder(LocalContext.current).data(imgUrl).crossfade(true).build(),
             placeholder = painterResource(R.drawable.ic_placeholder),
             contentDescription = "Movie Poster",
             modifier = Modifier
@@ -221,8 +233,7 @@ fun MovieCardWithNumber(
         Icon(
             painter = painterResource(id = vectorResource),
             contentDescription = "Number Icon",
-            modifier = Modifier
-                .align(Alignment.BottomStart),
+            modifier = Modifier.align(Alignment.BottomStart),
             tint = Color.Unspecified
         )
 
@@ -230,14 +241,11 @@ fun MovieCardWithNumber(
 }
 
 @Composable
-fun MovieCard(movie: Result) {
+fun MovieCard(movie: Result, onItemClick: (Int) -> Unit) {
     val imgUrl = BASE_IMAGE_URL + movie.poster_path
 
     AsyncImage(
-        model = ImageRequest.Builder(LocalContext.current)
-            .data(imgUrl)
-            .crossfade(true)
-            .build(),
+        model = ImageRequest.Builder(LocalContext.current).data(imgUrl).crossfade(true).build(),
         placeholder = painterResource(R.drawable.ic_placeholder),
         contentDescription = "Movie Poster",
         modifier = Modifier
@@ -245,7 +253,8 @@ fun MovieCard(movie: Result) {
             .width(100.dp)
             .padding(horizontal = 6.dp)
             .padding(bottom = 18.dp)
-            .clip(shape = RoundedCornerShape(16.dp)),
+            .clip(shape = RoundedCornerShape(16.dp))
+            .clickable { onItemClick(movie.id) },
         contentScale = ContentScale.Crop
     )
 }
@@ -261,43 +270,31 @@ fun TopHeader() {
             .padding(top = 42.dp)
     ) {
         Text(
-            text = "What do you want to watch",
-            color = Color.White,
-            style = TextStyle(
+            text = "What do you want to watch", color = Color.White, style = TextStyle(
                 fontFamily = Poppins, fontWeight = FontWeight.SemiBold, fontSize = 18.sp
             )
         )
         Spacer(modifier = Modifier.height(24.dp))
-        TextField(
-            value = textInput,
-            onValueChange = { textInput = it },
-            placeholder = {
-                Text(text = "Search", color = Color.Gray)
-            },
-            modifier = Modifier.fillMaxWidth(),
-            colors = TextFieldDefaults.colors(
-                focusedTextColor = Color.Gray,
-                focusedContainerColor = Color.DarkGray,
-                unfocusedContainerColor = Color.DarkGray,
-                focusedIndicatorColor = Color.Transparent,
-                unfocusedIndicatorColor = Color.Transparent
-            ),
-            shape = RoundedCornerShape(24.dp),
-            trailingIcon = {
-                Icon(
-                    Icons.Default.Search,
-                    contentDescription = "Search icon",
-                    tint = Color.Gray,
-                    modifier = Modifier.graphicsLayer(
-                        rotationZ = 90f
-                    )
+        TextField(value = textInput, onValueChange = { textInput = it }, placeholder = {
+            Text(text = "Search", color = Color.Gray)
+        }, modifier = Modifier.fillMaxWidth(), colors = TextFieldDefaults.colors(
+            focusedTextColor = Color.Gray,
+            focusedContainerColor = Color.DarkGray,
+            unfocusedContainerColor = Color.DarkGray,
+            focusedIndicatorColor = Color.Transparent,
+            unfocusedIndicatorColor = Color.Transparent
+        ), shape = RoundedCornerShape(24.dp), trailingIcon = {
+            Icon(
+                Icons.Default.Search,
+                contentDescription = "Search icon",
+                tint = Color.Gray,
+                modifier = Modifier.graphicsLayer(
+                    rotationZ = 90f
                 )
-            },
-            textStyle = TextStyle(
-                fontFamily = Poppins,
-                fontWeight = FontWeight.Normal,
-                fontSize = 14.sp
             )
+        }, textStyle = TextStyle(
+            fontFamily = Poppins, fontWeight = FontWeight.Normal, fontSize = 14.sp
+        )
 
         )
     }
