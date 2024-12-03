@@ -57,6 +57,8 @@ fun DetailsScreen(
 ) {
     LaunchedEffect(movieId) {
         detailsViewModel.getMovieDetails(movieId)
+        detailsViewModel.getMovieReviews(movieId, 1)
+        detailsViewModel.getMovieCast(movieId)
     }
     val movieDetails by detailsViewModel.movieDetails.collectAsState()
     val isLoading by detailsViewModel.isLoading.collectAsState()
@@ -64,6 +66,7 @@ fun DetailsScreen(
     val imagePosterURL = BASE_IMAGE_URL + movieDetails?.poster_path
     val tabTitles = listOf("About Movie", "Reviews", "Cast")
     var selectedCategoryIndex by remember { mutableIntStateOf(0) }
+    val movieReviews by detailsViewModel.reviews.collectAsState()
 
 
     Box(
@@ -220,8 +223,8 @@ fun DetailsScreen(
                 ) {
                     when (selectedCategoryIndex) {
                         0 -> TabText(text = movieDetails?.overview ?: "")
-                        1 -> TabText(text = "")
-                        2 -> TabText(text = "")
+                        1 -> ReviewsTab(movieReviews = movieReviews!!)
+                        2 -> CastTab(cast = detailsViewModel.cast.value!!)
                     }
                 }
             }

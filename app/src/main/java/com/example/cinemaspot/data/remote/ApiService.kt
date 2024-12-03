@@ -2,10 +2,12 @@ package com.example.cinemaspot.data.remote
 
 import com.example.cinemaspot.data.Constants
 import com.example.cinemaspot.data.models.movies.MovieDetailsResponse
+import com.example.cinemaspot.data.models.movies.reviews.MovieReviewsResponse
 import com.example.cinemaspot.data.models.movies.NowPlayingMoviesResponse
 import com.example.cinemaspot.data.models.movies.PopularMoviesResponse
 import com.example.cinemaspot.data.models.movies.TopRatedMoviesResponse
 import com.example.cinemaspot.data.models.movies.UpComingMoviesResponse
+import com.example.cinemaspot.data.models.movies.cast.MovieCastResponse
 import retrofit2.Response
 import retrofit2.http.GET
 import retrofit2.http.Path
@@ -46,5 +48,22 @@ interface ApiService {
         @Query("api_key") apiKey: String = Constants.API_KEY,
         @Query("language") language: String = "en-US"
     ): Response<MovieDetailsResponse>
+
+    @GET(Constants.MOVIE_REVIEWS_ENDPOINT)
+    suspend fun fetchMovieReviews(
+        @Path ("movie_id") movieId : Int,
+        @Query("api_key") apiKey: String = Constants.API_KEY,
+        @Query("language") language: String = "en-US",
+        @Query("page") page: Int
+    ): Response<MovieReviewsResponse>
+
+    @GET(Constants.MOVIE_CAST_ENDPOINT)
+    suspend fun fetchMovieCasts(
+        @Path ("movie_id") movieId : Int,
+        @Query("api_key") apiKey: String = Constants.API_KEY,
+        @Query("language") language: String = "en-US",
+    ): Response<MovieCastResponse>
+
+
 
 }
