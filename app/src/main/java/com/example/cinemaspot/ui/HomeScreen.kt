@@ -55,7 +55,7 @@ import com.example.cinemaspot.data.models.movies.Result
 import com.example.cinemaspot.ui.theme.Poppins
 
 @Composable
-fun HomeScreen(movieViewModel: MovieViewModel, onNavigatipnCallBack: (String, Int) -> Unit) {
+fun HomeScreen(movieViewModel: MovieViewModel, onNavigationCallBack: (String, Int) -> Unit) {
 
     val topRatedMovies by movieViewModel.topRatedMovies.collectAsState()
     val nowPlayingMovies by movieViewModel.nowPlayingMovies.collectAsState()
@@ -71,7 +71,7 @@ fun HomeScreen(movieViewModel: MovieViewModel, onNavigatipnCallBack: (String, In
 
     HomeScreenContent(
         isLoading, topRatedMovies, nowPlayingMovies, upcomingMovies, popularMovies, topFiveMovies
-    ) { route, movieId -> onNavigatipnCallBack(route, movieId) }
+    ) { route, movieId -> onNavigationCallBack(route, movieId) }
 
 }
 
