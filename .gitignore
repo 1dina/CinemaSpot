@@ -37,3 +37,9 @@ google-services.json
 
 # Android Profiling
 *.hprof
+# Ignore all files in .idea
+.idea/*
+
+# But keep some useful files
+!.idea/codeStyles/*
+!.idea/runConfigurations/*
