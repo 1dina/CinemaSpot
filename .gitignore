@@ -23,6 +23,11 @@ misc.xml
 deploymentTargetDropDown.xml
 render.experimental.xml
 
+# Custom files to ignore
+appinsight setting.xml
+deploymenttargetselector.xml
+gradle.xml
+
 # Keystore files
 *.jks
 *.keystore
