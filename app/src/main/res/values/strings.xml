@@ -1,4 +1,5 @@
 <resources>
     <string name="app_name">CinemaSpot</string>
     <string name="title_activity_wish_list_screen">WishListScreen</string>
+    <string name="title_activity_auth">AuthActivity</string>
 </resources>
