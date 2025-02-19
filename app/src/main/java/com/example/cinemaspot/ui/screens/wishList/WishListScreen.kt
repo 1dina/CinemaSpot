@@ -9,7 +9,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.example.cinemaspot.ui.screens.HeaderUI
+import com.example.cinemaspot.ui.common.HeaderUI
 import com.example.cinemaspot.ui.theme.Naive
 
 @Composable

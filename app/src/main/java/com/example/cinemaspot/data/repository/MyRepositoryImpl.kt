@@ -1,12 +1,12 @@
 package com.example.cinemaspot.data.repository
 
 import com.example.cinemaspot.data.Constants
-import com.example.cinemaspot.data.models.movies.MovieDetailsResponse
+import com.example.cinemaspot.data.models.movies.details.MovieDetailsResponse
 import com.example.cinemaspot.data.models.movies.reviews.MovieReviewsResponse
-import com.example.cinemaspot.data.models.movies.NowPlayingMoviesResponse
-import com.example.cinemaspot.data.models.movies.PopularMoviesResponse
-import com.example.cinemaspot.data.models.movies.TopRatedMoviesResponse
-import com.example.cinemaspot.data.models.movies.UpComingMoviesResponse
+import com.example.cinemaspot.data.models.movies.playing.NowPlayingMoviesResponse
+import com.example.cinemaspot.data.models.movies.popular.PopularMoviesResponse
+import com.example.cinemaspot.data.models.movies.top.TopRatedMoviesResponse
+import com.example.cinemaspot.data.models.movies.coming.UpComingMoviesResponse
 import com.example.cinemaspot.data.models.movies.cast.MovieCastResponse
 import com.example.cinemaspot.data.remote.ApiService
 import com.example.cinemaspot.domain.repository.MyRepository

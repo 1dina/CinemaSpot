@@ -11,4 +11,7 @@ object Constants {
     const val MOVIE_REVIEWS_ENDPOINT = "3/movie/{movie_id}/reviews"
     const val MOVIE_CAST_ENDPOINT = "3/movie/{movie_id}/credits"
     const val BASE_IMAGE_URL = "https://image.tmdb.org/t/p/w500/"
+    const val GET_REQUEST_TOKEN = "3/authentication/token/new"
+    const val VALIDATE_LOGIN = "3/authentication/token/validate_with_login"
+    const val CREATE_SESSION = "3/authentication/session/new"
 }

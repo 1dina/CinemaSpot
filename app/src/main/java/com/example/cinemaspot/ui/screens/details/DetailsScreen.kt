@@ -42,8 +42,8 @@ import coil3.request.ImageRequest
 import coil3.request.crossfade
 import com.example.cinemaspot.R
 import com.example.cinemaspot.data.Constants.BASE_IMAGE_URL
-import com.example.cinemaspot.ui.CustomTabLayout
-import com.example.cinemaspot.ui.screens.HeaderUIWithBookmark
+import com.example.cinemaspot.ui.common.CustomTabLayout
+import com.example.cinemaspot.ui.common.HeaderUIWithBookmark
 import com.example.cinemaspot.ui.theme.Naive
 import com.example.cinemaspot.ui.theme.NavieLight
 import com.example.cinemaspot.ui.theme.Orange
@@ -53,7 +53,8 @@ import com.example.cinemaspot.ui.theme.Poppins
 @Composable
 fun DetailsScreen(
     modifier: Modifier = Modifier, detailsViewModel: DetailsViewModel,
-    movieId: Int
+    movieId: Int ,
+    onBackIconNavigate:() -> Unit
 ) {
     LaunchedEffect(movieId) {
         detailsViewModel.getMovieDetails(movieId)
@@ -67,6 +68,7 @@ fun DetailsScreen(
     val tabTitles = listOf("About Movie", "Reviews", "Cast")
     var selectedCategoryIndex by remember { mutableIntStateOf(0) }
     val movieReviews by detailsViewModel.reviews.collectAsState()
+    val movieCast by detailsViewModel.cast.collectAsState()
 
 
     Box(
@@ -84,7 +86,7 @@ fun DetailsScreen(
                 Column(
                     modifier = modifier.padding(horizontal = 16.dp, vertical = 24.dp),
                 ) {
-                    HeaderUIWithBookmark("Detail", onClickBackButton = {//pop back stack
+                    HeaderUIWithBookmark("Detail", onClickBackButton = { onBackIconNavigate()
                     }, onBookmarkClick = { // add to bookmark
                     })
                 }
@@ -224,7 +226,7 @@ fun DetailsScreen(
                     when (selectedCategoryIndex) {
                         0 -> TabText(text = movieDetails?.overview ?: "")
                         1 -> ReviewsTab(movieReviews = movieReviews!!)
-                        2 -> CastTab(cast = detailsViewModel.cast.value!!)
+                        2 -> CastTab(cast = movieCast!!)
                     }
                 }
             }

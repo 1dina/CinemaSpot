@@ -3,7 +3,7 @@ package com.example.cinemaspot.ui.screens.details
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.cinemaspot.data.models.movies.MovieDetailsResponse
+import com.example.cinemaspot.data.models.movies.details.MovieDetailsResponse
 import com.example.cinemaspot.data.models.movies.cast.MovieCastResponse
 import com.example.cinemaspot.data.models.movies.reviews.MovieReviewsResponse
 import com.example.cinemaspot.domain.usecase.GetMovieCastUseCase
