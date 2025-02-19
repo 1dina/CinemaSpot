@@ -34,7 +34,9 @@ fun AppNavGraph(navController: NavController) {
         ) {
             val movieId = it.arguments?.getInt("movieId")!!
             val detailsViewModel = hiltViewModel<DetailsViewModel>()
-            DetailsScreen(detailsViewModel = detailsViewModel , movieId = movieId)
+            DetailsScreen(detailsViewModel = detailsViewModel , movieId = movieId){
+                navController.popBackStack()
+            }
         }
     }
 

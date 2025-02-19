@@ -53,7 +53,8 @@ import com.example.cinemaspot.ui.theme.Poppins
 @Composable
 fun DetailsScreen(
     modifier: Modifier = Modifier, detailsViewModel: DetailsViewModel,
-    movieId: Int
+    movieId: Int ,
+    onBackIconNavigate:() -> Unit
 ) {
     LaunchedEffect(movieId) {
         detailsViewModel.getMovieDetails(movieId)
@@ -85,7 +86,7 @@ fun DetailsScreen(
                 Column(
                     modifier = modifier.padding(horizontal = 16.dp, vertical = 24.dp),
                 ) {
-                    HeaderUIWithBookmark("Detail", onClickBackButton = {//pop back stack
+                    HeaderUIWithBookmark("Detail", onClickBackButton = { onBackIconNavigate()
                     }, onBookmarkClick = { // add to bookmark
                     })
                 }
