@@ -52,8 +52,8 @@ import coil3.request.crossfade
 import com.example.cinemaspot.R
 import com.example.cinemaspot.data.Constants.BASE_IMAGE_URL
 import com.example.cinemaspot.data.models.movies.Result
-import com.example.cinemaspot.ui.routes.AppRoutes
 import com.example.cinemaspot.ui.common.CustomTabLayout
+import com.example.cinemaspot.ui.routes.AppRoutes
 import com.example.cinemaspot.ui.theme.Poppins
 
 @Composable
@@ -68,7 +68,8 @@ fun HomeScreen(movieViewModel: MovieViewModel, onNavigationCallBack: (String, In
 
     LaunchedEffect(Unit) {
         if (topRatedMovies.isEmpty() && nowPlayingMovies.isEmpty() && upcomingMovies.isEmpty()
-            && popularMovies.isEmpty()) movieViewModel.fetchAllMovies()
+            && popularMovies.isEmpty()
+        ) movieViewModel.fetchAllMovies()
     }
 
     HomeScreenContent(
@@ -147,7 +148,6 @@ private fun HomeScreenContent(
                     }
 
                 }
-
             }
         }
     }
@@ -314,4 +314,8 @@ fun TabText(text: String) {
         maxLines = 1,
     )
 }
+
+
+
+
 

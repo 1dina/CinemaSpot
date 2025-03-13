@@ -3,12 +3,17 @@ package com.example.cinemaspot.ui.screens.details
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.cinemaspot.data.models.movies.details.MovieDetailsResponse
+import com.example.cinemaspot.data.models.movies.watchList.Result
 import com.example.cinemaspot.data.models.movies.cast.MovieCastResponse
+import com.example.cinemaspot.data.models.movies.details.MovieDetailsResponse
 import com.example.cinemaspot.data.models.movies.reviews.MovieReviewsResponse
+import com.example.cinemaspot.data.models.movies.watchList.WatchlistRequest
+import com.example.cinemaspot.data.models.movies.watchList.WatchlistResponse
+import com.example.cinemaspot.domain.usecase.AddToWatchlistUseCase
 import com.example.cinemaspot.domain.usecase.GetMovieCastUseCase
 import com.example.cinemaspot.domain.usecase.GetMovieDetailsUseCase
 import com.example.cinemaspot.domain.usecase.GetMovieReviewsUseCase
+import com.example.cinemaspot.domain.usecase.GetWatchListMoviesUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -20,7 +25,9 @@ import javax.inject.Inject
 class DetailsViewModel @Inject constructor(
     private val getMovieDetailsUseCase: GetMovieDetailsUseCase,
     private val getMovieReviewsUseCase: GetMovieReviewsUseCase,
-    private val getMovieCastUseCase: GetMovieCastUseCase
+    private val getMovieCastUseCase: GetMovieCastUseCase,
+    private val addToWatchlistUseCase: AddToWatchlistUseCase,
+    private val getMovieWatchListUseCase: GetWatchListMoviesUseCase
 ) :
     ViewModel() {
     private val _movieDetails = MutableStateFlow<MovieDetailsResponse?>(null)
@@ -31,6 +38,10 @@ class DetailsViewModel @Inject constructor(
     val reviews: StateFlow<MovieReviewsResponse?> = _reviews
     private val _cast = MutableStateFlow<MovieCastResponse?>(null)
     val cast: StateFlow<MovieCastResponse?> = _cast
+    private val _addToWatchlistStatus = MutableStateFlow<String?>(null)
+    val addToWatchlistStatus: StateFlow<String?> = _addToWatchlistStatus
+    private val _watchList = MutableStateFlow<List<Int>?>(null)
+    val watchList: StateFlow<List<Int>?> = _watchList
 
 
     fun getMovieDetails(movieId: Int) {
@@ -56,10 +67,11 @@ class DetailsViewModel @Inject constructor(
 
     }
 
-    fun getMovieReviews(movieId: Int , page : Int) {
+    fun getMovieReviews(movieId: Int, page: Int) {
         viewModelScope.launch(Dispatchers.IO) {
             try {
-                val response = getMovieReviewsUseCase.getMovieReviews(movieId = movieId,page = page)
+                val response =
+                    getMovieReviewsUseCase.getMovieReviews(movieId = movieId, page = page)
                 if (response.isSuccessful) {
                     _reviews.value = response.body()!!
                 } else {
@@ -92,5 +104,44 @@ class DetailsViewModel @Inject constructor(
             }
         }
 
+    }
+
+    fun addMovieToWatchList(movieId: Int) {
+        viewModelScope.launch(Dispatchers.IO) {
+            try {
+                val response =
+                    addToWatchlistUseCase.addMovie(movie = WatchlistRequest(mediaId = movieId))
+                if (response.isSuccessful) {
+                    _addToWatchlistStatus.value = "Success"
+                    Log.e("AddingToWatchList", "You have successfully added this movie")
+                } else {
+                    _addToWatchlistStatus.value = "Failed"
+                    Log.e(
+                        "AddingToWatchList",
+                        "Failed to fetch credits: ${response.errorBody()?.string()}"
+                    )
+                }
+            } catch (e: Exception) {
+                _addToWatchlistStatus.value = "Failed"
+                Log.e("AddingToWatchList", "Error fetching credits", e)
+            }
+        }
+    }
+
+    fun getWatchListMovies(page: Int = 1) {
+        viewModelScope.launch(Dispatchers.IO) {
+            try {
+                val response = getMovieWatchListUseCase.getMoviesListFromWatchList(page = page)
+                if (response.isSuccessful) {
+                    _watchList.value = response.body()!!.results.map { it.id }
+                } else {
+                    Log.e(
+                        "DetailsViewModel",
+                        "Failed to fetch credits: ${response.errorBody()?.string()}")
+                }
+            } catch (e: Exception) {
+                Log.e("Fetching watchlist movies", "Error fetching credits", e)
+            }
+        }
     }
 }

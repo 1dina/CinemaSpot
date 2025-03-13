@@ -1,19 +1,26 @@
 package com.example.cinemaspot.data.repository
 
 import com.example.cinemaspot.data.Constants
+import com.example.cinemaspot.data.local.EncryptedPrefsManager
+import com.example.cinemaspot.data.models.movies.cast.MovieCastResponse
+import com.example.cinemaspot.data.models.movies.coming.UpComingMoviesResponse
 import com.example.cinemaspot.data.models.movies.details.MovieDetailsResponse
-import com.example.cinemaspot.data.models.movies.reviews.MovieReviewsResponse
 import com.example.cinemaspot.data.models.movies.playing.NowPlayingMoviesResponse
 import com.example.cinemaspot.data.models.movies.popular.PopularMoviesResponse
+import com.example.cinemaspot.data.models.movies.reviews.MovieReviewsResponse
 import com.example.cinemaspot.data.models.movies.top.TopRatedMoviesResponse
-import com.example.cinemaspot.data.models.movies.coming.UpComingMoviesResponse
-import com.example.cinemaspot.data.models.movies.cast.MovieCastResponse
+import com.example.cinemaspot.data.models.movies.watchList.WatchListMoviesResponse
+import com.example.cinemaspot.data.models.movies.watchList.WatchlistRequest
+import com.example.cinemaspot.data.models.movies.watchList.WatchlistResponse
 import com.example.cinemaspot.data.remote.ApiService
 import com.example.cinemaspot.domain.repository.MyRepository
 import retrofit2.Response
 import javax.inject.Inject
 
-class MyRepositoryImpl @Inject constructor(private val apiService: ApiService) : MyRepository {
+class MyRepositoryImpl @Inject constructor(
+    private val apiService: ApiService,
+    val encryptedPrefsManager: EncryptedPrefsManager
+) : MyRepository {
     override suspend fun fetchTopRatedMovies(page: Int): Response<TopRatedMoviesResponse> =
         apiService.fetchTopRatedMovies(Constants.API_KEY, page = page)
 
@@ -36,5 +43,19 @@ class MyRepositoryImpl @Inject constructor(private val apiService: ApiService) :
 
     override suspend fun fetchMovieCasts(movieId: Int): Response<MovieCastResponse> =
         apiService.fetchMovieCasts(movieId)
+
+    override suspend fun insertMovieToWatchList(movie: WatchlistRequest): Response<WatchlistResponse> =
+        apiService.insertMovieToWatchlist(
+            Constants.API_KEY,
+            encryptedPrefsManager.getSessionId().toString(),
+            movie
+        )
+
+    override suspend fun fetchMoviesFromWatchlist(page: Int): Response<WatchListMoviesResponse> =
+        apiService.fetchMoviesFromWatchlist(
+            Constants.API_KEY,
+            encryptedPrefsManager.getSessionId().toString(),
+            page
+        )
 
 }

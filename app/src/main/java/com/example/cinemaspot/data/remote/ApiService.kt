@@ -1,10 +1,6 @@
 package com.example.cinemaspot.data.remote
 
 import com.example.cinemaspot.data.Constants
-import com.example.cinemaspot.data.models.user.LoginRequest
-import com.example.cinemaspot.data.models.user.LoginValidationResponse
-import com.example.cinemaspot.data.models.user.RequestTokenResponse
-import com.example.cinemaspot.data.models.user.SessionResponse
 import com.example.cinemaspot.data.models.movies.cast.MovieCastResponse
 import com.example.cinemaspot.data.models.movies.coming.UpComingMoviesResponse
 import com.example.cinemaspot.data.models.movies.details.MovieDetailsResponse
@@ -12,6 +8,13 @@ import com.example.cinemaspot.data.models.movies.playing.NowPlayingMoviesRespons
 import com.example.cinemaspot.data.models.movies.popular.PopularMoviesResponse
 import com.example.cinemaspot.data.models.movies.reviews.MovieReviewsResponse
 import com.example.cinemaspot.data.models.movies.top.TopRatedMoviesResponse
+import com.example.cinemaspot.data.models.movies.watchList.WatchListMoviesResponse
+import com.example.cinemaspot.data.models.movies.watchList.WatchlistRequest
+import com.example.cinemaspot.data.models.movies.watchList.WatchlistResponse
+import com.example.cinemaspot.data.models.user.LoginRequest
+import com.example.cinemaspot.data.models.user.LoginValidationResponse
+import com.example.cinemaspot.data.models.user.RequestTokenResponse
+import com.example.cinemaspot.data.models.user.SessionResponse
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.GET
@@ -71,7 +74,6 @@ interface ApiService {
     ): Response<MovieCastResponse>
 
 
-
     @GET(Constants.GET_REQUEST_TOKEN)
     suspend fun getRequestToken(
         @Query("api_key") apiKey: String
@@ -88,4 +90,19 @@ interface ApiService {
         @Query("api_key") apiKey: String,
         @Query("request_token") requestToken: String
     ): Response<SessionResponse>
+
+    @POST(Constants.ADD_MOVIE_TO_WATCHLIST)
+    suspend fun insertMovieToWatchlist(
+        @Query("api_key") apiKey: String,
+        @Query("session_id") sessionId: String,
+        @Body watchlistRequest: WatchlistRequest
+    ): Response<WatchlistResponse>
+
+    @GET(Constants.WATCHLIST_MOVIE_ENDPOINT)
+    suspend fun fetchMoviesFromWatchlist(
+        @Query("api_key") apiKey: String,
+        @Query("session_id") sessionId: String,
+        @Query("page") page: Int = 1,
+        @Query("language") language: String = "en-US"
+    ): Response<WatchListMoviesResponse>
 }

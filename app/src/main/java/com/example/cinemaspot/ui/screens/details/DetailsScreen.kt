@@ -52,14 +52,16 @@ import com.example.cinemaspot.ui.theme.Poppins
 
 @Composable
 fun DetailsScreen(
-    modifier: Modifier = Modifier, detailsViewModel: DetailsViewModel,
-    movieId: Int ,
-    onBackIconNavigate:() -> Unit
+    modifier: Modifier = Modifier,
+    detailsViewModel: DetailsViewModel,
+    movieId: Int,
+    onBackIconNavigate: () -> Unit
 ) {
     LaunchedEffect(movieId) {
         detailsViewModel.getMovieDetails(movieId)
         detailsViewModel.getMovieReviews(movieId, 1)
         detailsViewModel.getMovieCast(movieId)
+        detailsViewModel.getWatchListMovies()
     }
     val movieDetails by detailsViewModel.movieDetails.collectAsState()
     val isLoading by detailsViewModel.isLoading.collectAsState()
@@ -69,6 +71,11 @@ fun DetailsScreen(
     var selectedCategoryIndex by remember { mutableIntStateOf(0) }
     val movieReviews by detailsViewModel.reviews.collectAsState()
     val movieCast by detailsViewModel.cast.collectAsState()
+    var isBeingAdded =
+        detailsViewModel.watchList.collectAsState().value?.contains(movieDetails?.id) == true
+    if (detailsViewModel.addToWatchlistStatus.collectAsState().value == "Success") isBeingAdded =
+        true
+
 
 
     Box(
@@ -86,9 +93,12 @@ fun DetailsScreen(
                 Column(
                     modifier = modifier.padding(horizontal = 16.dp, vertical = 24.dp),
                 ) {
-                    HeaderUIWithBookmark("Detail", onClickBackButton = { onBackIconNavigate()
-                    }, onBookmarkClick = { // add to bookmark
-                    })
+                    HeaderUIWithBookmark("Detail", onClickBackButton = {
+                        onBackIconNavigate()
+                    }, onBookmarkClick = {
+                        if (!isBeingAdded)
+                            detailsViewModel.addMovieToWatchList(movieId)
+                    }, bookmarked = isBeingAdded)
                 }
                 Box(
                     modifier = modifier
@@ -99,9 +109,7 @@ fun DetailsScreen(
                     Box {
                         AsyncImage(
                             model = ImageRequest.Builder(LocalContext.current)
-                                .data(imageBackgroundURL)
-                                .crossfade(true)
-                                .build(),
+                                .data(imageBackgroundURL).crossfade(true).build(),
                             contentDescription = "",
                             modifier = modifier
                                 .fillMaxSize()
@@ -155,10 +163,8 @@ fun DetailsScreen(
 
                     ) {
                         AsyncImage(
-                            model = ImageRequest.Builder(LocalContext.current)
-                                .data(imagePosterURL)
-                                .crossfade(true)
-                                .build(),
+                            model = ImageRequest.Builder(LocalContext.current).data(imagePosterURL)
+                                .crossfade(true).build(),
                             contentDescription = "",
                             modifier = modifier.clip(RoundedCornerShape(16.dp))
                         )
@@ -170,7 +176,8 @@ fun DetailsScreen(
                                 .padding(
                                     start = 8.dp, end = 8.dp, top = 16.dp, bottom = 4.dp
                                 ),
-                            maxLines = 2, overflow = TextOverflow.Ellipsis,
+                            maxLines = 2,
+                            overflow = TextOverflow.Ellipsis,
                             style = TextStyle(
                                 fontFamily = Poppins,
                                 fontWeight = FontWeight.SemiBold,
@@ -187,9 +194,7 @@ fun DetailsScreen(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     MovieInfoDetails(
-                        R.drawable.ic_calendarblank,
-                        movieDetails?.release_date?.take(4),
-                        modifier
+                        R.drawable.ic_calendarblank, movieDetails?.release_date?.take(4), modifier
                     )
                     VerticalDivider(
                         thickness = 1.dp,
@@ -197,9 +202,7 @@ fun DetailsScreen(
                         modifier = modifier.padding(horizontal = 8.dp)
                     )
                     MovieInfoDetails(
-                        R.drawable.ic_clock,
-                        movieDetails?.runtime.toString() + " Minutes",
-                        modifier
+                        R.drawable.ic_clock, movieDetails?.runtime.toString() + " Minutes", modifier
                     )
                     VerticalDivider(
                         thickness = 1.dp,
@@ -207,9 +210,7 @@ fun DetailsScreen(
                         modifier = modifier.padding(horizontal = 8.dp)
                     )
                     MovieInfoDetails(
-                        R.drawable.ic_ticket,
-                        movieDetails?.genres?.first()?.name,
-                        modifier
+                        R.drawable.ic_ticket, movieDetails?.genres?.first()?.name, modifier
                     )
 
                 }
@@ -237,14 +238,10 @@ fun DetailsScreen(
 
 @Composable
 private fun MovieInfoDetails(
-    @DrawableRes icon: Int,
-    text: String?,
-    modifier: Modifier
+    @DrawableRes icon: Int, text: String?, modifier: Modifier
 ) {
     Icon(
-        painter = painterResource(id = icon),
-        contentDescription = "",
-        tint = Color.Unspecified
+        painter = painterResource(id = icon), contentDescription = "", tint = Color.Unspecified
     )
 
     Text(
@@ -252,9 +249,7 @@ private fun MovieInfoDetails(
         color = Color.Gray,
         modifier = modifier.padding(start = 8.dp),
         style = TextStyle(
-            fontFamily = Poppins,
-            fontWeight = FontWeight.Normal,
-            fontSize = 12.sp
+            fontFamily = Poppins, fontWeight = FontWeight.Normal, fontSize = 12.sp
         )
     )
 }
@@ -262,20 +257,16 @@ private fun MovieInfoDetails(
 @Composable
 private fun TabText(text: String) {
     Text(
-        text = text,
-        style = TextStyle(
-            fontFamily = Poppins,
-            fontWeight = FontWeight.Normal
-        ),
-        fontSize = 12.sp, color = Color.White
+        text = text, style = TextStyle(
+            fontFamily = Poppins, fontWeight = FontWeight.Normal
+        ), fontSize = 12.sp, color = Color.White
     )
 }
 
 @Composable
 private fun LoadingIndicator() {
     Box(
-        modifier = Modifier.fillMaxSize(),
-        contentAlignment = Alignment.Center
+        modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center
     ) {
         CircularProgressIndicator(color = Color.White, modifier = Modifier.size(64.dp))
     }

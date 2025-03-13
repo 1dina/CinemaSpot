@@ -14,4 +14,6 @@ object Constants {
     const val GET_REQUEST_TOKEN = "3/authentication/token/new"
     const val VALIDATE_LOGIN = "3/authentication/token/validate_with_login"
     const val CREATE_SESSION = "3/authentication/session/new"
+    const val WATCHLIST_MOVIE_ENDPOINT = "3/account/null/watchlist/movies"
+    const val ADD_MOVIE_TO_WATCHLIST = "3/account/null/watchlist"
 }
