@@ -12,6 +12,7 @@ import com.example.cinemaspot.data.models.movies.playing.NowPlayingMoviesRespons
 import com.example.cinemaspot.data.models.movies.popular.PopularMoviesResponse
 import com.example.cinemaspot.data.models.movies.reviews.MovieReviewsResponse
 import com.example.cinemaspot.data.models.movies.top.TopRatedMoviesResponse
+import com.example.cinemaspot.data.models.movies.trailer.MovieVideosResponse
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.GET
@@ -88,4 +89,13 @@ interface ApiService {
         @Query("api_key") apiKey: String,
         @Query("request_token") requestToken: String
     ): Response<SessionResponse>
+
+    @GET(Constants.MOVIE_TRAILER_ENDPOINT)
+    suspend fun getMovieTrailer(
+        @Path("movie_id") movieId: Int,
+        @Query("api_key") apiKey: String = Constants.API_KEY
+    ): Response<MovieVideosResponse>
+
+
+
 }

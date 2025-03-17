@@ -14,4 +14,5 @@ object Constants {
     const val GET_REQUEST_TOKEN = "3/authentication/token/new"
     const val VALIDATE_LOGIN = "3/authentication/token/validate_with_login"
     const val CREATE_SESSION = "3/authentication/session/new"
+    const val MOVIE_TRAILER_ENDPOINT = "3/movie/{movie_id}/videos"
 }
