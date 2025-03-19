@@ -8,6 +8,7 @@ import com.example.cinemaspot.data.models.movies.popular.PopularMoviesResponse
 import com.example.cinemaspot.data.models.movies.top.TopRatedMoviesResponse
 import com.example.cinemaspot.data.models.movies.coming.UpComingMoviesResponse
 import com.example.cinemaspot.data.models.movies.cast.MovieCastResponse
+import com.example.cinemaspot.data.models.movies.trailer.MovieVideosResponse
 import com.example.cinemaspot.data.remote.ApiService
 import com.example.cinemaspot.domain.repository.MyRepository
 import retrofit2.Response
@@ -36,5 +37,8 @@ class MyRepositoryImpl @Inject constructor(private val apiService: ApiService) :
 
     override suspend fun fetchMovieCasts(movieId: Int): Response<MovieCastResponse> =
         apiService.fetchMovieCasts(movieId)
+
+    override suspend fun getMovieTrailer(movieId: Int): Response<MovieVideosResponse> =
+        apiService.getMovieTrailer(movieId)
 
 }

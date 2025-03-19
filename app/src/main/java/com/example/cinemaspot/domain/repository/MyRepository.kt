@@ -7,6 +7,7 @@ import com.example.cinemaspot.data.models.movies.popular.PopularMoviesResponse
 import com.example.cinemaspot.data.models.movies.top.TopRatedMoviesResponse
 import com.example.cinemaspot.data.models.movies.coming.UpComingMoviesResponse
 import com.example.cinemaspot.data.models.movies.cast.MovieCastResponse
+import com.example.cinemaspot.data.models.movies.trailer.MovieVideosResponse
 import retrofit2.Response
 
 interface MyRepository {
@@ -17,4 +18,5 @@ interface MyRepository {
     suspend fun fetchMovieDetails(movieId : Int):Response<MovieDetailsResponse>
     suspend fun fetchMovieReviews(movieId: Int,page: Int):Response<MovieReviewsResponse>
     suspend fun fetchMovieCasts(movieId: Int):Response<MovieCastResponse>
+    suspend fun getMovieTrailer(movieId: Int): Response<MovieVideosResponse>
 }
