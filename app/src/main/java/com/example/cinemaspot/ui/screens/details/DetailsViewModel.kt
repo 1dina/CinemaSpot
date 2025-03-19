@@ -12,6 +12,7 @@ import com.example.cinemaspot.domain.usecase.GetMovieCastUseCase
 import com.example.cinemaspot.domain.usecase.GetMovieDetailsUseCase
 import com.example.cinemaspot.domain.usecase.GetMovieReviewsUseCase
 import com.example.cinemaspot.domain.usecase.GetWatchListMoviesUseCase
+import com.example.cinemaspot.domain.usecase.GetMovieTrailerUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -26,6 +27,7 @@ class DetailsViewModel @Inject constructor(
     private val getMovieCastUseCase: GetMovieCastUseCase,
     private val addToWatchlistUseCase: AddToWatchlistUseCase,
     private val getMovieWatchListUseCase: GetWatchListMoviesUseCase
+    private val getMovieTrailerUseCase: GetMovieTrailerUseCase
 ) :
     ViewModel() {
     private val _movieDetails = MutableStateFlow<MovieDetailsResponse?>(null)
@@ -40,7 +42,8 @@ class DetailsViewModel @Inject constructor(
     val addToWatchlistStatus: StateFlow<String?> = _addToWatchlistStatus
     private val _watchList = MutableStateFlow<List<Int>?>(null)
     val watchList: StateFlow<List<Int>?> = _watchList
-
+    private val _trailerKey = MutableStateFlow<String?>(null)
+    val trailerKey: StateFlow<String?> = _trailerKey
 
     fun getMovieDetails(movieId: Int) {
         viewModelScope.launch(Dispatchers.IO) {
@@ -140,6 +143,27 @@ class DetailsViewModel @Inject constructor(
                 }
             } catch (e: Exception) {
                 Log.e("Fetching watchlist movies", "Error fetching credits", e)
+            }
+        }
+    }
+}
+
+fun getMovieTrailer(movieId: Int){
+        viewModelScope.launch(Dispatchers.IO) {
+            try {
+                val response = getMovieTrailerUseCase.getMovieTrailer(movieId)
+                if (response.isSuccessful){
+                    val videos = response.body()?.results?: emptyList()
+                    Log.d("DetailsViewModel", "Fetched videos: $videos")
+                    val trailer = videos.firstOrNull { it.site == "YouTube" && it.type == "Trailer" }
+                    Log.d("DetailsViewModel", "Selected Trailer: $trailer")
+                    _trailerKey.value = trailer?.key
+                }else{
+                    Log.e("DetailsViewModel", "Failed to fetch trailer: ${response.errorBody()?.string()}")
+                }
+
+            }catch (e:Exception){
+                Log.e("DetailsViewModel", "Error fetching trailer", e)
             }
         }
     }

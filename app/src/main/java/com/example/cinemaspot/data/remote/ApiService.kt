@@ -15,6 +15,7 @@ import com.example.cinemaspot.data.models.user.LoginRequest
 import com.example.cinemaspot.data.models.user.LoginValidationResponse
 import com.example.cinemaspot.data.models.user.RequestTokenResponse
 import com.example.cinemaspot.data.models.user.SessionResponse
+import com.example.cinemaspot.data.models.movies.trailer.MovieVideosResponse
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.GET
@@ -105,4 +106,12 @@ interface ApiService {
         @Query("page") page: Int = 1,
         @Query("language") language: String = "en-US"
     ): Response<WatchListMoviesResponse>
+  
+    @GET(Constants.MOVIE_TRAILER_ENDPOINT)
+    suspend fun getMovieTrailer(
+        @Path("movie_id") movieId: Int,
+        @Query("api_key") apiKey: String = Constants.API_KEY
+    ): Response<MovieVideosResponse>
+
+
 }

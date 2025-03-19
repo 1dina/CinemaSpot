@@ -16,4 +16,5 @@ object Constants {
     const val CREATE_SESSION = "3/authentication/session/new"
     const val WATCHLIST_MOVIE_ENDPOINT = "3/account/null/watchlist/movies"
     const val ADD_MOVIE_TO_WATCHLIST = "3/account/null/watchlist"
+    const val MOVIE_TRAILER_ENDPOINT = "3/movie/{movie_id}/videos"
 }

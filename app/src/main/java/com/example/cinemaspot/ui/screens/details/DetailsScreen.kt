@@ -1,7 +1,11 @@
 package com.example.cinemaspot.ui.screens.details
 
+import android.content.Intent
+import android.net.Uri
+import android.widget.Toast
 import androidx.annotation.DrawableRes
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -11,6 +15,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -28,6 +33,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
@@ -62,6 +68,7 @@ fun DetailsScreen(
         detailsViewModel.getMovieReviews(movieId, 1)
         detailsViewModel.getMovieCast(movieId)
         detailsViewModel.getWatchListMovies()
+        detailsViewModel.getMovieTrailer(movieId)
     }
     val movieDetails by detailsViewModel.movieDetails.collectAsState()
     val isLoading by detailsViewModel.isLoading.collectAsState()
@@ -75,6 +82,9 @@ fun DetailsScreen(
         detailsViewModel.watchList.collectAsState().value?.contains(movieDetails?.id) == true
     if (detailsViewModel.addToWatchlistStatus.collectAsState().value == "Success") isBeingAdded =
         true
+    val trailerKey by detailsViewModel.trailerKey.collectAsState()
+    val context = LocalContext.current
+
 
     Box(
         modifier = modifier
@@ -122,6 +132,25 @@ fun DetailsScreen(
                                 ),
                             contentScale = ContentScale.FillBounds
                         )
+                        Icon(
+                            painter = painterResource(id = R.drawable.ic_play),
+                            contentDescription = "YouTube",
+                            tint = Color.Unspecified,
+                            modifier = Modifier
+                                .size(52.dp)
+                                .shadow(8.dp, shape = CircleShape)
+                                .align(Alignment.Center)
+                                .padding(bottom = 8.dp)
+                                .clickable {
+                                    if (!trailerKey.isNullOrEmpty()) {
+                                        val intent = Intent(Intent.ACTION_VIEW, Uri.parse("https://www.youtube.com/watch?v=$trailerKey"))
+                                        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                                        context.startActivity(intent)
+                                    } else {
+                                        Toast.makeText(context, "No trailer available", Toast.LENGTH_SHORT).show()
+                                    }
+                                }
+                        )
                         Card(
                             shape = RoundedCornerShape(8.dp),
                             colors = CardDefaults.cardColors(
@@ -151,6 +180,7 @@ fun DetailsScreen(
                                 )
                             }
                         }
+
 
                     }
                     Row(
@@ -209,6 +239,9 @@ fun DetailsScreen(
                     )
                     MovieInfoDetails(
                         R.drawable.ic_ticket, movieDetails?.genres?.first()?.name, modifier
+                        R.drawable.ic_ticket,
+                        movieDetails?.genres?.firstOrNull()?.name ?: "Unknown",
+                        modifier
                     )
 
                 }
