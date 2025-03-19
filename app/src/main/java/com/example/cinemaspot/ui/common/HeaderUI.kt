@@ -22,8 +22,10 @@ import com.example.cinemaspot.R
 import com.example.cinemaspot.ui.theme.Poppins
 
 @Composable
-fun HeaderUI(headerTitle: String,
-             onClickBackButton: () -> Unit, modifier: Modifier = Modifier) {
+fun HeaderUI(
+    headerTitle: String,
+    onClickBackButton: () -> Unit, modifier: Modifier = Modifier
+) {
     Box(
         modifier = modifier
             .fillMaxWidth()
@@ -36,7 +38,8 @@ fun HeaderUI(headerTitle: String,
                 .align(Alignment.CenterStart)
                 .clickable { onClickBackButton() }
                 .padding(8.dp)
-                .size(24.dp)
+                .size(24.dp),
+            tint = Color.Unspecified
 
         )
 
@@ -47,7 +50,8 @@ fun HeaderUI(headerTitle: String,
             textAlign = TextAlign.Center,
             style = TextStyle(
                 fontFamily = Poppins, fontWeight = FontWeight.Medium, fontSize = 18.sp
-            )
+            ),
+            color = Color.White
         )
     }
 }
@@ -56,9 +60,11 @@ fun HeaderUI(headerTitle: String,
 fun HeaderUIWithBookmark(
     headerTitle: String,
     onClickBackButton: () -> Unit,
-    onBookmarkClick:()->Unit,
-    modifier: Modifier = Modifier
+    onBookmarkClick: () -> Unit,
+    modifier: Modifier = Modifier,
+    bookmarked: Boolean = false
 ) {
+    val icon = if (bookmarked) R.drawable.ic_bookmarked else R.drawable.ic_not_bookmarked
     Box(
         modifier = modifier
             .padding(top = 16.dp)
@@ -78,15 +84,14 @@ fun HeaderUIWithBookmark(
         Text(
             text = headerTitle,
             color = Color.White,
-            modifier = Modifier.align(Alignment.Center)
-            ,style = TextStyle(
+            modifier = Modifier.align(Alignment.Center), style = TextStyle(
                 fontFamily = Poppins, fontWeight = FontWeight.Medium, fontSize = 18.sp
             )
 
         )
 
         Icon(
-            painter = painterResource(id = R.drawable.ic_bookmark),
+            painter = painterResource(id = icon),
             contentDescription = "Bookmark icon",
             modifier = Modifier
                 .align(Alignment.CenterEnd)
@@ -101,5 +106,5 @@ fun HeaderUIWithBookmark(
 @Preview(showBackground = true)
 @Composable
 fun LabelUIPreview() {
- HeaderUIWithBookmark("Details", onClickBackButton = {}, onBookmarkClick = {})
+    HeaderUIWithBookmark("Details", onClickBackButton = {}, onBookmarkClick = {})
 }

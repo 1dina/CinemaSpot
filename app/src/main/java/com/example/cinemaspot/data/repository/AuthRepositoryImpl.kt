@@ -1,5 +1,6 @@
 package com.example.cinemaspot.data.repository
 
+import android.util.Log
 import com.example.cinemaspot.data.models.user.LoginRequest
 import com.example.cinemaspot.data.remote.ApiService
 import com.example.cinemaspot.domain.repository.AuthRepository
@@ -20,6 +21,7 @@ class AuthRepositoryImpl @Inject constructor(
                         Result.Success(it.request_token)
                     } else {
                         Result.Error(Exception("Failed to get request token"))
+
                     }
                 } ?: Result.Error(Exception("Empty response body"))
             } else {

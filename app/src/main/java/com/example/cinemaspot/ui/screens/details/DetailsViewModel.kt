@@ -6,9 +6,12 @@ import androidx.lifecycle.viewModelScope
 import com.example.cinemaspot.data.models.movies.cast.MovieCastResponse
 import com.example.cinemaspot.data.models.movies.details.MovieDetailsResponse
 import com.example.cinemaspot.data.models.movies.reviews.MovieReviewsResponse
+import com.example.cinemaspot.data.models.movies.watchList.WatchlistRequest
+import com.example.cinemaspot.domain.usecase.AddToWatchlistUseCase
 import com.example.cinemaspot.domain.usecase.GetMovieCastUseCase
 import com.example.cinemaspot.domain.usecase.GetMovieDetailsUseCase
 import com.example.cinemaspot.domain.usecase.GetMovieReviewsUseCase
+import com.example.cinemaspot.domain.usecase.GetWatchListMoviesUseCase
 import com.example.cinemaspot.domain.usecase.GetMovieTrailerUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -22,6 +25,8 @@ class DetailsViewModel @Inject constructor(
     private val getMovieDetailsUseCase: GetMovieDetailsUseCase,
     private val getMovieReviewsUseCase: GetMovieReviewsUseCase,
     private val getMovieCastUseCase: GetMovieCastUseCase,
+    private val addToWatchlistUseCase: AddToWatchlistUseCase,
+    private val getMovieWatchListUseCase: GetWatchListMoviesUseCase
     private val getMovieTrailerUseCase: GetMovieTrailerUseCase
 ) :
     ViewModel() {
@@ -33,6 +38,10 @@ class DetailsViewModel @Inject constructor(
     val reviews: StateFlow<MovieReviewsResponse?> = _reviews
     private val _cast = MutableStateFlow<MovieCastResponse?>(null)
     val cast: StateFlow<MovieCastResponse?> = _cast
+    private val _addToWatchlistStatus = MutableStateFlow<String?>(null)
+    val addToWatchlistStatus: StateFlow<String?> = _addToWatchlistStatus
+    private val _watchList = MutableStateFlow<List<Int>?>(null)
+    val watchList: StateFlow<List<Int>?> = _watchList
     private val _trailerKey = MutableStateFlow<String?>(null)
     val trailerKey: StateFlow<String?> = _trailerKey
 
@@ -97,7 +106,49 @@ class DetailsViewModel @Inject constructor(
         }
 
     }
-    fun getMovieTrailer(movieId: Int){
+
+    fun addMovieToWatchList(movieId: Int) {
+        viewModelScope.launch(Dispatchers.IO) {
+            try {
+                val response =
+                    addToWatchlistUseCase.addMovie(movie = WatchlistRequest(mediaId = movieId))
+                if (response.isSuccessful) {
+                    _addToWatchlistStatus.value = "Success"
+                    Log.e("AddingToWatchList", "You have successfully added this movie")
+                } else {
+                    _addToWatchlistStatus.value = "Failed"
+                    Log.e(
+                        "AddingToWatchList",
+                        "Failed to fetch credits: ${response.errorBody()?.string()}"
+                    )
+                }
+            } catch (e: Exception) {
+                _addToWatchlistStatus.value = "Failed"
+                Log.e("AddingToWatchList", "Error fetching credits", e)
+            }
+        }
+    }
+
+    fun getWatchListMovies(page: Int = 1) {
+        viewModelScope.launch(Dispatchers.IO) {
+            try {
+                val response = getMovieWatchListUseCase.getMoviesListFromWatchList(page = page)
+                if (response.isSuccessful) {
+                    _watchList.value = response.body()!!.results.map { it.id }
+                } else {
+                    Log.e(
+                        "DetailsViewModel",
+                        "Failed to fetch credits: ${response.errorBody()?.string()}"
+                    )
+                }
+            } catch (e: Exception) {
+                Log.e("Fetching watchlist movies", "Error fetching credits", e)
+            }
+        }
+    }
+}
+
+fun getMovieTrailer(movieId: Int){
         viewModelScope.launch(Dispatchers.IO) {
             try {
                 val response = getMovieTrailerUseCase.getMovieTrailer(movieId)
