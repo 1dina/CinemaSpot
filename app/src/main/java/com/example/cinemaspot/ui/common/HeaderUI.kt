@@ -38,7 +38,8 @@ fun HeaderUI(
                 .align(Alignment.CenterStart)
                 .clickable { onClickBackButton() }
                 .padding(8.dp)
-                .size(24.dp)
+                .size(24.dp),
+            tint = Color.Unspecified
 
         )
 
@@ -49,7 +50,8 @@ fun HeaderUI(
             textAlign = TextAlign.Center,
             style = TextStyle(
                 fontFamily = Poppins, fontWeight = FontWeight.Medium, fontSize = 18.sp
-            )
+            ),
+            color = Color.White
         )
     }
 }

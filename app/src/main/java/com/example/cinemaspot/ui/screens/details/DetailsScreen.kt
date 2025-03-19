@@ -76,8 +76,6 @@ fun DetailsScreen(
     if (detailsViewModel.addToWatchlistStatus.collectAsState().value == "Success") isBeingAdded =
         true
 
-
-
     Box(
         modifier = modifier
             .fillMaxSize()
@@ -264,7 +262,7 @@ private fun TabText(text: String) {
 }
 
 @Composable
-private fun LoadingIndicator() {
+ fun LoadingIndicator() {
     Box(
         modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center
     ) {

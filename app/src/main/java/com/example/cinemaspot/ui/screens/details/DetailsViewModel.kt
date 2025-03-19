@@ -3,12 +3,10 @@ package com.example.cinemaspot.ui.screens.details
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.cinemaspot.data.models.movies.watchList.Result
 import com.example.cinemaspot.data.models.movies.cast.MovieCastResponse
 import com.example.cinemaspot.data.models.movies.details.MovieDetailsResponse
 import com.example.cinemaspot.data.models.movies.reviews.MovieReviewsResponse
 import com.example.cinemaspot.data.models.movies.watchList.WatchlistRequest
-import com.example.cinemaspot.data.models.movies.watchList.WatchlistResponse
 import com.example.cinemaspot.domain.usecase.AddToWatchlistUseCase
 import com.example.cinemaspot.domain.usecase.GetMovieCastUseCase
 import com.example.cinemaspot.domain.usecase.GetMovieDetailsUseCase
@@ -137,7 +135,8 @@ class DetailsViewModel @Inject constructor(
                 } else {
                     Log.e(
                         "DetailsViewModel",
-                        "Failed to fetch credits: ${response.errorBody()?.string()}")
+                        "Failed to fetch credits: ${response.errorBody()?.string()}"
+                    )
                 }
             } catch (e: Exception) {
                 Log.e("Fetching watchlist movies", "Error fetching credits", e)

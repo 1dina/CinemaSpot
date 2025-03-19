@@ -12,10 +12,15 @@ import com.example.cinemaspot.ui.screens.details.DetailsScreen
 import com.example.cinemaspot.ui.screens.details.DetailsViewModel
 import com.example.cinemaspot.ui.screens.home.HomeScreen
 import com.example.cinemaspot.ui.screens.home.MovieViewModel
+import com.example.cinemaspot.ui.screens.search.SearchScreen
+import com.example.cinemaspot.ui.screens.wishList.WishListScreen
+import com.example.cinemaspot.ui.screens.wishList.WishListViewModel
 
 object AppRoutes {
     const val HOME = "home"
     const val DETAILS = "details"
+    const val SEARCH = "search"
+    const val WATCH_LIST = "watchlist"
 }
 
 @Composable
@@ -28,13 +33,25 @@ fun AppNavGraph(navController: NavController) {
                 navController.navigate("$route/$movieId")
             }
         }
+        composable(AppRoutes.SEARCH) {
+            SearchScreen()
+        }
+
+        composable(AppRoutes.WATCH_LIST) {
+            val wishListViewModel = hiltViewModel<WishListViewModel>()
+            WishListScreen(wishListViewModel, onBackIconNavigate = {
+                navController.popBackStack()
+            }) { route, movieId ->
+                navController.navigate("$route/$movieId")
+            }
+        }
         composable(
             route = "${AppRoutes.DETAILS}/{movieId}",
             arguments = listOf(navArgument("movieId") { type = NavType.IntType })
         ) {
             val movieId = it.arguments?.getInt("movieId")!!
             val detailsViewModel = hiltViewModel<DetailsViewModel>()
-            DetailsScreen(detailsViewModel = detailsViewModel , movieId = movieId){
+            DetailsScreen(detailsViewModel = detailsViewModel, movieId = movieId) {
                 navController.popBackStack()
             }
         }
