@@ -22,6 +22,7 @@ import com.example.cinemaspot.ui.theme.Blue
 import com.example.cinemaspot.ui.theme.CinemaSpotTheme
 import com.example.cinemaspot.ui.theme.Grey
 import com.example.cinemaspot.ui.theme.Naive
+import com.example.cinemaspot.ui.theme.Poppins
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -62,14 +63,22 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-fun BottomNavigationBar(navController: androidx.navigation.NavHostController, items: List<BottomNavBarScreens>) {
-    NavigationBar (containerColor = Naive) {
+fun BottomNavigationBar(
+    navController: androidx.navigation.NavHostController,
+    items: List<BottomNavBarScreens>
+) {
+    NavigationBar(containerColor = Naive) {
         val currentRoute = navController.currentBackStackEntryAsState().value?.destination?.route
 
         items.forEach { screen ->
             NavigationBarItem(
                 icon = { Icon(painterResource(id = screen.itemImage), contentDescription = null) },
-                label = { Text(text = stringResource(id = screen.resourceId)) },
+                label = {
+                    Text(
+                        text = stringResource(id = screen.resourceId),
+                        fontFamily = Poppins
+                    )
+                },
                 selected = currentRoute == screen.route,
                 onClick = {
                     navController.navigate(screen.route) {
