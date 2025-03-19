@@ -26,7 +26,7 @@ class DetailsViewModel @Inject constructor(
     private val getMovieReviewsUseCase: GetMovieReviewsUseCase,
     private val getMovieCastUseCase: GetMovieCastUseCase,
     private val addToWatchlistUseCase: AddToWatchlistUseCase,
-    private val getMovieWatchListUseCase: GetWatchListMoviesUseCase
+    private val getMovieWatchListUseCase: GetWatchListMoviesUseCase,
     private val getMovieTrailerUseCase: GetMovieTrailerUseCase
 ) :
     ViewModel() {
@@ -146,7 +146,6 @@ class DetailsViewModel @Inject constructor(
             }
         }
     }
-}
 
 fun getMovieTrailer(movieId: Int){
         viewModelScope.launch(Dispatchers.IO) {
@@ -168,3 +167,4 @@ fun getMovieTrailer(movieId: Int){
         }
     }
 }
+

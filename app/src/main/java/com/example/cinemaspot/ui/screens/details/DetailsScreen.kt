@@ -143,11 +143,20 @@ fun DetailsScreen(
                                 .padding(bottom = 8.dp)
                                 .clickable {
                                     if (!trailerKey.isNullOrEmpty()) {
-                                        val intent = Intent(Intent.ACTION_VIEW, Uri.parse("https://www.youtube.com/watch?v=$trailerKey"))
+                                        val intent = Intent(
+                                            Intent.ACTION_VIEW,
+                                            Uri.parse("https://www.youtube.com/watch?v=$trailerKey")
+                                        )
                                         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                                         context.startActivity(intent)
                                     } else {
-                                        Toast.makeText(context, "No trailer available", Toast.LENGTH_SHORT).show()
+                                        Toast
+                                            .makeText(
+                                                context,
+                                                "No trailer available",
+                                                Toast.LENGTH_SHORT
+                                            )
+                                            .show()
                                     }
                                 }
                         )
@@ -238,9 +247,8 @@ fun DetailsScreen(
                         modifier = modifier.padding(horizontal = 8.dp)
                     )
                     MovieInfoDetails(
-                        R.drawable.ic_ticket, movieDetails?.genres?.first()?.name, modifier
                         R.drawable.ic_ticket,
-                        movieDetails?.genres?.firstOrNull()?.name ?: "Unknown",
+                        movieDetails?.genres?.first()?.name ?: "Unknown",
                         modifier
                     )
 
@@ -295,7 +303,7 @@ private fun TabText(text: String) {
 }
 
 @Composable
- fun LoadingIndicator() {
+fun LoadingIndicator() {
     Box(
         modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center
     ) {
