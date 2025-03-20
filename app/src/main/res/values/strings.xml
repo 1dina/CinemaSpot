@@ -2,4 +2,7 @@
     <string name="app_name">CinemaSpot</string>
     <string name="title_activity_wish_list_screen">WishListScreen</string>
     <string name="title_activity_auth">AuthActivity</string>
+    <string name="home">Home</string>
+    <string name="search">Search</string>
+    <string name="watchlist">Watchlist</string>
 </resources>

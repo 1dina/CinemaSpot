@@ -12,8 +12,8 @@ import com.example.cinemaspot.ui.screens.auth.login.LoginScreen
 import com.example.cinemaspot.ui.screens.auth.splash.SplashScreen
 
 object AuthRoutes {
-    const val Splash = "splash"
-    const val Auth = "auth"
+    const val SPLASH = "splash"
+    const val AUTH = "auth"
 }
 
 @Composable
@@ -23,9 +23,9 @@ fun AuthNavigation(
     context: Context
 ) {
 
-    NavHost(navController = navController, startDestination = AuthRoutes.Splash) {
-        composable(AuthRoutes.Splash) { SplashScreen(navController, prefsManager, context) }
-        composable(AuthRoutes.Auth) {
+    NavHost(navController = navController, startDestination = AuthRoutes.SPLASH) {
+        composable(AuthRoutes.SPLASH) { SplashScreen(navController, prefsManager, context) }
+        composable(AuthRoutes.AUTH) {
             val authViewModel = hiltViewModel<AuthViewModel>()
             LoginScreen(authViewModel, context)
         }
