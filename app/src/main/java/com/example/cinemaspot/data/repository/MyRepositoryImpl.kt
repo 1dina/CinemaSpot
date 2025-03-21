@@ -8,6 +8,7 @@ import com.example.cinemaspot.data.models.movies.details.MovieDetailsResponse
 import com.example.cinemaspot.data.models.movies.playing.NowPlayingMoviesResponse
 import com.example.cinemaspot.data.models.movies.popular.PopularMoviesResponse
 import com.example.cinemaspot.data.models.movies.reviews.MovieReviewsResponse
+import com.example.cinemaspot.data.models.movies.search.MovieSearchResponse
 import com.example.cinemaspot.data.models.movies.top.TopRatedMoviesResponse
 import com.example.cinemaspot.data.models.movies.trailer.MovieVideosResponse
 import com.example.cinemaspot.data.models.movies.watchList.WatchListMoviesResponse
@@ -61,5 +62,10 @@ class MyRepositoryImpl @Inject constructor(
 
     override suspend fun getMovieTrailer(movieId: Int): Response<MovieVideosResponse> =
         apiService.getMovieTrailer(movieId)
+
+    override suspend fun searchForMovie(
+        query: String,
+        page: Int
+    ): Response<MovieSearchResponse> = apiService.searchForMovie(page, query = query)
 
 }
