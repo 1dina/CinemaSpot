@@ -21,6 +21,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -60,6 +61,9 @@ fun SearchScreen(
     val searchViewModel = hiltViewModel<MovieSearchViewModel>()
     val resultList by searchViewModel.resultList.collectAsState()
     val isLoading by searchViewModel.isLoading.collectAsState()
+    LaunchedEffect(inputText) {
+        searchViewModel.updateQuery(inputText)
+    }
     Box(
         modifier = modifier
             .fillMaxSize()
@@ -86,7 +90,6 @@ fun SearchScreen(
                     value = inputText,
                     onValueChange = { it ->
                         inputText = it
-                        searchViewModel.searchForMovie(it, 1)
                     },
                     placeholder = {
                         Text(
