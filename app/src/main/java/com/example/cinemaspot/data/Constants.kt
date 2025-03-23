@@ -17,4 +17,5 @@ object Constants {
     const val WATCHLIST_MOVIE_ENDPOINT = "3/account/null/watchlist/movies"
     const val ADD_MOVIE_TO_WATCHLIST = "3/account/null/watchlist"
     const val MOVIE_TRAILER_ENDPOINT = "3/movie/{movie_id}/videos"
+    const val SEARCH_MOVIE_ENDPOINT ="3/search/movie"
 }

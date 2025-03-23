@@ -7,7 +7,9 @@ import com.example.cinemaspot.data.models.movies.details.MovieDetailsResponse
 import com.example.cinemaspot.data.models.movies.playing.NowPlayingMoviesResponse
 import com.example.cinemaspot.data.models.movies.popular.PopularMoviesResponse
 import com.example.cinemaspot.data.models.movies.reviews.MovieReviewsResponse
+import com.example.cinemaspot.data.models.movies.search.MovieSearchResponse
 import com.example.cinemaspot.data.models.movies.top.TopRatedMoviesResponse
+import com.example.cinemaspot.data.models.movies.trailer.MovieVideosResponse
 import com.example.cinemaspot.data.models.movies.watchList.WatchListMoviesResponse
 import com.example.cinemaspot.data.models.movies.watchList.WatchlistRequest
 import com.example.cinemaspot.data.models.movies.watchList.WatchlistResponse
@@ -15,7 +17,6 @@ import com.example.cinemaspot.data.models.user.LoginRequest
 import com.example.cinemaspot.data.models.user.LoginValidationResponse
 import com.example.cinemaspot.data.models.user.RequestTokenResponse
 import com.example.cinemaspot.data.models.user.SessionResponse
-import com.example.cinemaspot.data.models.movies.trailer.MovieVideosResponse
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.GET
@@ -106,12 +107,19 @@ interface ApiService {
         @Query("page") page: Int = 1,
         @Query("language") language: String = "en-US"
     ): Response<WatchListMoviesResponse>
-  
+
     @GET(Constants.MOVIE_TRAILER_ENDPOINT)
     suspend fun getMovieTrailer(
         @Path("movie_id") movieId: Int,
         @Query("api_key") apiKey: String = Constants.API_KEY
     ): Response<MovieVideosResponse>
 
+    @GET(Constants.SEARCH_MOVIE_ENDPOINT)
+    suspend fun searchForMovie(
+        @Query("page") page: Int = 1,
+        @Query("language") language: String = "en-US",
+        @Query("api_key") apiKey: String = Constants.API_KEY,
+        @Query("query") query: String
+    ): Response<MovieSearchResponse>
 
 }

@@ -28,13 +28,23 @@ fun AppNavGraph(navController: NavController) {
     NavHost(navController = navController as NavHostController, startDestination = AppRoutes.HOME) {
         composable(AppRoutes.HOME) {
             val movieViewModel = hiltViewModel<MovieViewModel>()
-            HomeScreen(movieViewModel = movieViewModel)
-            { route, movieId ->
-                navController.navigate("$route/$movieId")
-            }
+            HomeScreen(
+                movieViewModel = movieViewModel,
+                onSearchBarClick = {
+                    navController.navigate(AppRoutes.SEARCH)},
+                onNavigationCallBack = { route, movieId ->
+                    navController.navigate("$route/$movieId")
+                })
         }
         composable(AppRoutes.SEARCH) {
-            SearchScreen()
+            SearchScreen(
+                onBackIconNavigate = {
+                    navController.popBackStack()
+                },
+                onMovieClicked = { route,movieId ->
+                    navController.navigate("$route/$movieId")
+                }
+            )
         }
 
         composable(AppRoutes.WATCH_LIST) {
