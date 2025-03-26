@@ -1,5 +1,6 @@
 package com.example.cinemaspot.ui.screens.wishList
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -13,7 +14,9 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -77,8 +80,10 @@ fun WishListScreen(
         wishListViewModel.getWatchListMovies()
     }
     val isLoading by wishListViewModel.isLoading.collectAsState()
+    val isLoadingAnotherPage by wishListViewModel.isLoadingAnotherPage.collectAsState()
     val watchList = wishListViewModel.watchList.collectAsState().value
-    val watchListReversal = watchList.reversed()
+    val listState = rememberLazyListState()
+
     Box(
         modifier = modifier
             .fillMaxSize()
@@ -96,15 +101,33 @@ fun WishListScreen(
                 onBackIconNavigate()
             })
             Spacer(modifier = Modifier.size(16.dp))
-            LazyColumn(modifier = modifier.fillMaxSize()) {
-                items(watchListReversal.size) {
-                    WishListItem(movie = watchListReversal[it]) { route, id ->
+            LazyColumn(modifier = modifier.fillMaxSize(), state = listState) {
+                items(watchList.size) {
+                    WishListItem(movie = watchList[it]) { route, id ->
                         onItemSelected(route, id)
+                    }
+                    if (it == watchList.size - 1) {
+                        Log.e("WishListScreen", "Reached the end of the list")
+                        wishListViewModel.loadNextPage()
+                    }
+                }
+                item {
+                    Log.d("WishListScreen", "Recomposing Loading Indicator: $isLoadingAnotherPage")
+                    if (isLoadingAnotherPage && !isLoading) {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(vertical = 16.dp),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            CircularProgressIndicator(
+                                color = Color.White,
+                                modifier = Modifier.size(32.dp)
+                            )
+                        }
                     }
                 }
             }
-
-
         }
 
     }
