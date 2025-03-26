@@ -17,6 +17,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -44,6 +45,18 @@ class DetailsViewModel @Inject constructor(
     val watchList: StateFlow<List<Int>?> = _watchList
     private val _trailerKey = MutableStateFlow<String?>(null)
     val trailerKey: StateFlow<String?> = _trailerKey
+    private val _isLoadingAnotherPage = MutableStateFlow(false)
+    val isLoadingAnotherPage: StateFlow<Boolean> = _isLoadingAnotherPage
+    private var totalPage = 1
+    private var currentPage = 1
+
+    fun loadNextPage(movieId: Int) {
+        if (!isLoading.value && currentPage < totalPage ) {
+            currentPage++
+            _isLoadingAnotherPage.value = true
+            getMovieReviews(movieId,currentPage)
+        }
+    }
 
     fun getMovieDetails(movieId: Int) {
         viewModelScope.launch(Dispatchers.IO) {
@@ -68,13 +81,14 @@ class DetailsViewModel @Inject constructor(
 
     }
 
-    fun getMovieReviews(movieId: Int, page: Int) {
+    fun getMovieReviews(movieId: Int, page: Int =1) {
         viewModelScope.launch(Dispatchers.IO) {
             try {
                 val response =
                     getMovieReviewsUseCase.getMovieReviews(movieId = movieId, page = page)
                 if (response.isSuccessful) {
-                    _reviews.value = response.body()!!
+                    _reviews.update { it -> response.body() }
+                    Log.e("ReviewTap", "total page = $totalPage")
                 } else {
                     Log.e(
                         "DetailsViewModel",
@@ -83,6 +97,8 @@ class DetailsViewModel @Inject constructor(
                 }
             } catch (e: Exception) {
                 Log.e("DetailsViewModel", "Error fetching reviews", e)
+            }finally {
+                _isLoadingAnotherPage.value = false
             }
         }
 
