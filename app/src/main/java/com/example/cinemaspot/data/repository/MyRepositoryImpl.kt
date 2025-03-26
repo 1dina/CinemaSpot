@@ -12,6 +12,9 @@ import com.example.cinemaspot.data.models.movies.top.TopRatedMoviesResponse
 import com.example.cinemaspot.data.models.movies.watchList.WatchListMoviesResponse
 import com.example.cinemaspot.data.models.movies.watchList.WatchlistRequest
 import com.example.cinemaspot.data.models.movies.watchList.WatchlistResponse
+import com.example.cinemaspot.data.models.movies.coming.UpComingMoviesResponse
+import com.example.cinemaspot.data.models.movies.cast.MovieCastResponse
+import com.example.cinemaspot.data.models.movies.trailer.MovieVideosResponse
 import com.example.cinemaspot.data.remote.ApiService
 import com.example.cinemaspot.domain.repository.MyRepository
 import retrofit2.Response
@@ -57,5 +60,8 @@ class MyRepositoryImpl @Inject constructor(
             encryptedPrefsManager.getSessionId().toString(),
             page
         )
+
+    override suspend fun getMovieTrailer(movieId: Int): Response<MovieVideosResponse> =
+        apiService.getMovieTrailer(movieId)
 
 }
