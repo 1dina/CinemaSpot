@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
@@ -24,14 +25,11 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
-import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -57,7 +55,11 @@ import com.example.cinemaspot.ui.routes.AppRoutes
 import com.example.cinemaspot.ui.theme.Poppins
 
 @Composable
-fun HomeScreen(movieViewModel: MovieViewModel, onNavigationCallBack: (String, Int) -> Unit) {
+fun HomeScreen(
+    movieViewModel: MovieViewModel,
+    onNavigationCallBack: (String, Int) -> Unit,
+    onSearchBarClick: () -> Unit
+) {
 
     val topRatedMovies by movieViewModel.topRatedMovies.collectAsState()
     val nowPlayingMovies by movieViewModel.nowPlayingMovies.collectAsState()
@@ -73,9 +75,9 @@ fun HomeScreen(movieViewModel: MovieViewModel, onNavigationCallBack: (String, In
     }
 
     HomeScreenContent(
-        isLoading, topRatedMovies, nowPlayingMovies, upcomingMovies, popularMovies, topFiveMovies
-    ) { route, movieId -> onNavigationCallBack(route, movieId) }
-
+        isLoading, topRatedMovies, nowPlayingMovies, upcomingMovies, popularMovies, topFiveMovies,
+        onAnyItemClick = { route, movieId -> onNavigationCallBack(route, movieId) },
+        onSearchBarClick = { onSearchBarClick() })
 }
 
 @Composable
@@ -86,7 +88,8 @@ private fun HomeScreenContent(
     upcomingMovies: List<Result>,
     popularMovies: List<Result>,
     topFiveMovies: List<Result>,
-    onAnyItemClick: (String, Int) -> Unit
+    onAnyItemClick: (String, Int) -> Unit,
+    onSearchBarClick: () -> Unit
 ) {
     var selectedCategoryIndex by remember { mutableIntStateOf(0) }
 
@@ -101,7 +104,7 @@ private fun HomeScreenContent(
             if (isLoading) {
                 LoadingScreen()
             } else {
-                TopHeader()
+                TopHeader { onSearchBarClick() }
                 Spacer(modifier = Modifier.height(24.dp))
                 MovieList(topFiveMovies) { id -> onAnyItemClick(AppRoutes.DETAILS, id) }
                 Spacer(modifier = Modifier.height(32.dp))
@@ -263,42 +266,32 @@ fun MovieCard(movie: Result, onItemClick: (Int) -> Unit) {
 
 
 @Composable
-fun TopHeader() {
-    var textInput by remember { mutableStateOf("") }
+fun TopHeader(onSearchBarClick: () -> Unit) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 24.dp)
             .padding(top = 42.dp)
     ) {
-        Text(
-            text = "What do you want to watch", color = Color.White, style = TextStyle(
-                fontFamily = Poppins, fontWeight = FontWeight.SemiBold, fontSize = 18.sp
+        Row(horizontalArrangement = Arrangement.SpaceBetween, modifier = Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically) {
+            Text(
+                text = "What do you want to watch", color = Color.White, style = TextStyle(
+                    fontFamily = Poppins, fontWeight = FontWeight.SemiBold, fontSize = 18.sp
+                )
             )
-        )
-        Spacer(modifier = Modifier.height(24.dp))
-        TextField(value = textInput, onValueChange = { textInput = it }, placeholder = {
-            Text(text = "Search", color = Color.Gray)
-        }, modifier = Modifier.fillMaxWidth(), colors = TextFieldDefaults.colors(
-            focusedTextColor = Color.Gray,
-            focusedContainerColor = Color.DarkGray,
-            unfocusedContainerColor = Color.DarkGray,
-            focusedIndicatorColor = Color.Transparent,
-            unfocusedIndicatorColor = Color.Transparent
-        ), shape = RoundedCornerShape(24.dp), trailingIcon = {
             Icon(
                 Icons.Default.Search,
                 contentDescription = "Search icon",
-                tint = Color.Gray,
-                modifier = Modifier.graphicsLayer(
-                    rotationZ = 90f
-                )
+                tint = Color.White,
+                modifier = Modifier
+                    .graphicsLayer(
+                     rotationZ = 90f
+                    )
+                    .clickable { onSearchBarClick() }
             )
-        }, textStyle = TextStyle(
-            fontFamily = Poppins, fontWeight = FontWeight.Normal, fontSize = 14.sp
-        )
-
-        )
+        }
+        Spacer(modifier = Modifier.height(24.dp))
     }
 }
 
