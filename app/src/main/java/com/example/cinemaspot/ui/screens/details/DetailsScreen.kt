@@ -65,7 +65,7 @@ fun DetailsScreen(
 ) {
     LaunchedEffect(movieId) {
         detailsViewModel.getMovieDetails(movieId)
-        detailsViewModel.getMovieReviews(movieId, 1)
+        detailsViewModel.getMovieReviews(movieId)
         detailsViewModel.getMovieCast(movieId)
         detailsViewModel.getWatchListMovies()
         detailsViewModel.getMovieTrailer(movieId)
@@ -84,6 +84,8 @@ fun DetailsScreen(
         true
     val trailerKey by detailsViewModel.trailerKey.collectAsState()
     val context = LocalContext.current
+    val isLoadingAnotherPage by detailsViewModel.isLoadingAnotherPage.collectAsState()
+
 
 
     Box(
@@ -265,7 +267,13 @@ fun DetailsScreen(
                 ) {
                     when (selectedCategoryIndex) {
                         0 -> TabText(text = movieDetails?.overview ?: "")
-                        1 -> ReviewsTab(movieReviews = movieReviews!!)
+                        1 -> ReviewsTab(
+                            movieReviews = movieReviews!!,
+                            isLoading = isLoadingAnotherPage
+                        ){
+                            detailsViewModel.loadNextPage(movieId)
+                        }
+
                         2 -> CastTab(cast = movieCast!!)
                     }
                 }
