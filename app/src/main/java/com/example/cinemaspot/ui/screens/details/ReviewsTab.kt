@@ -1,20 +1,24 @@
 package com.example.cinemaspot.ui.screens.details
 
+import android.util.Log
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Color.Companion.White
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
@@ -32,26 +36,63 @@ import com.example.cinemaspot.data.models.movies.reviews.ResultXXX
 import com.example.cinemaspot.ui.theme.Poppins
 
 @Composable
-fun ReviewsTab(modifier: Modifier = Modifier, movieReviews: MovieReviewsResponse) {
+fun ReviewsTab(
+    modifier: Modifier = Modifier, movieReviews: MovieReviewsResponse,
+    isLoading: Boolean, onEndReached: () -> Unit
+) {
     if (movieReviews.results.isNotEmpty()) {
-        ReviewsList(modifier = modifier, movieReviews = movieReviews)
-    }else {
-        Text(text = "No Reviews", style = TextStyle(
-            fontFamily = Poppins,
-            fontWeight = FontWeight.Normal,
-            fontSize = 12.sp
-        ), color = Color.White,
+        ReviewsList(
+            modifier = modifier,
+            movieReviews = movieReviews,
+            isLoading = isLoading
+        ) {
+            onEndReached()
+        }
+    } else {
+        Text(
+            text = "No Reviews", style = TextStyle(
+                fontFamily = Poppins,
+                fontWeight = FontWeight.Normal,
+                fontSize = 12.sp
+            ), color = White,
             modifier = modifier.fillMaxWidth(),
-            textAlign = TextAlign.Center)
+            textAlign = TextAlign.Center
+        )
     }
 
 }
 
 @Composable
-fun ReviewsList(modifier: Modifier, movieReviews: MovieReviewsResponse) {
-    LazyColumn(modifier = modifier) {
-        items(movieReviews.results) {
-            ReviewItem(modifier = modifier, result = it)
+fun ReviewsList(
+    modifier: Modifier,
+    movieReviews: MovieReviewsResponse,
+    isLoading: Boolean,
+    onEndReached: () -> Unit,
+) {
+    LazyColumn(modifier = modifier, state = rememberLazyListState()) {
+        items(movieReviews.results.size) { it ->
+            ReviewItem(modifier = modifier, result = movieReviews.results[it])
+
+            if (it == movieReviews.results.size - 1) {
+                Log.e("ReviewTap", "Reached the end of the list")
+                onEndReached()
+            }
+        }
+        item {
+            Log.d("ReviewTap", "Recomposing Loading Indicator: $isLoading")
+            if (isLoading) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 16.dp),
+                    contentAlignment = Alignment.Center
+                ) {
+                    CircularProgressIndicator(
+                        color = White,
+                        modifier = Modifier.size(32.dp)
+                    )
+                }
+            }
         }
     }
 }
@@ -77,7 +118,7 @@ fun ReviewItem(modifier: Modifier, result: ResultXXX) {
                     fontFamily = Poppins,
                     fontWeight = FontWeight.SemiBold,
                     fontSize = 14.sp
-                ), color = Color.White,
+                ), color = White,
                 modifier = modifier.padding(bottom = 8.dp)
             )
             Text(
@@ -85,7 +126,7 @@ fun ReviewItem(modifier: Modifier, result: ResultXXX) {
                     fontFamily = Poppins,
                     fontWeight = FontWeight.Normal,
                     fontSize = 12.sp
-                ), color = Color.White
+                ), color =White
             )
             HorizontalDivider(
                 thickness = 0.2.dp,
