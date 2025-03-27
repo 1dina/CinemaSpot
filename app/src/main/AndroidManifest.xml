@@ -28,7 +28,7 @@
         <activity
             android:name=".ui.screens.auth.AuthActivity"
             android:exported="true"
-            android:theme="@style/Theme.CinemaSpot">
+            android:theme="@style/Theme.CinemaSpot.Splash">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
