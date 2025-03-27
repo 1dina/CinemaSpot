@@ -9,34 +9,56 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class WishListViewModel @Inject constructor(
-    private val getWatchListMoviesUseCase: GetWatchListMoviesUseCase) : ViewModel() {
+    private val getWatchListMoviesUseCase: GetWatchListMoviesUseCase
+) : ViewModel() {
     private val _watchList = MutableStateFlow<List<Result>>(emptyList())
     val watchList: StateFlow<List<Result>> = _watchList
     private val _isLoading = MutableStateFlow(true)
     val isLoading: StateFlow<Boolean> = _isLoading
+    private val _isLoadingAnotherPage = MutableStateFlow(false)
+    val isLoadingAnotherPage: StateFlow<Boolean> = _isLoadingAnotherPage
+    private var totalPage = 1
+    private var currentPage = 1
+    private var isFirstTime = true
+
+    fun loadNextPage() {
+        if (!isLoading.value && currentPage > 1) {
+            currentPage--
+            _isLoadingAnotherPage.value = true
+            getWatchListMovies(currentPage)
+        }
+    }
 
     fun getWatchListMovies(page: Int = 1) {
         viewModelScope.launch(Dispatchers.IO) {
             try {
                 val response = getWatchListMoviesUseCase.getMoviesListFromWatchList(page = page)
                 if (response.isSuccessful) {
-                    _isLoading.value = false
-                    _watchList.value = response.body()!!.results
+                    if (isFirstTime) {
+                        totalPage = response.body()!!.total_pages
+                        currentPage = totalPage
+                        isFirstTime = false
+                        getWatchListMovies(currentPage)
+                    } else {
+                        _watchList.update { it -> it + response.body()!!.results.reversed() }
+                    }
                 } else {
-                    _isLoading.value = false
                     Log.e(
                         "Fetching watchlist movies",
                         "Failed to fetch credits: ${response.errorBody()?.string()}"
                     )
                 }
             } catch (e: Exception) {
-                _isLoading.value = false
                 Log.e("Fetching watchlist movies", "Error fetching credits", e)
+            }finally {
+                _isLoading.value = false
+                _isLoadingAnotherPage.value = false
             }
         }
     }
