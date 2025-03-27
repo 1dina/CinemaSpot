@@ -12,6 +12,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -26,15 +27,27 @@ class MovieViewModel @Inject constructor(
 
     private val _topRatedMovies = MutableStateFlow<List<Result>>(emptyList())
     val topRatedMovies: StateFlow<List<Result>> get() = _topRatedMovies
+    private var topRatedPage = 1
+    private var totalTopRatedPages = Int.MAX_VALUE
+    private var isFetchingTopRated = false
 
     private val _nowPlayingMovies = MutableStateFlow<List<Result>>(emptyList())
     val nowPlayingMovies: StateFlow<List<Result>> get() = _nowPlayingMovies
+    private var nowPlayingPage = 1
+    private var totalNowPlayingPages = Int.MAX_VALUE
+    private var isFetchingNowPlaying = false
 
     private val _upcomingMovies = MutableStateFlow<List<Result>>(emptyList())
     val upcomingMovies: StateFlow<List<Result>> get() = _upcomingMovies
+    private var upcomingPage = 1
+    private var totalUpcomingPages = Int.MAX_VALUE
+    private var isFetchingUpcoming = false
 
     private val _popularMovies = MutableStateFlow<List<Result>>(emptyList())
     val popularMovies: StateFlow<List<Result>> get() = _popularMovies
+    private var popularPage = 1
+    private var totalPopularPages = Int.MAX_VALUE
+    private var isFetchingPopular = false
 
     private val _isLoading = MutableStateFlow(true)
     val isLoading: StateFlow<Boolean> = _isLoading
@@ -43,23 +56,26 @@ class MovieViewModel @Inject constructor(
     val topFiveMovies: StateFlow<List<Result>> = _topFiveMovies
 
     fun fetchAllMovies() {
-        fetchTopRatedMovies(1)
-        fetchPopularMovies(1)
-        fetchUpComingMovies(1)
-        fetchNowPlayingMovies(1)
+        fetchTopRatedMovies()
+        fetchPopularMovies()
+        fetchUpComingMovies()
+        fetchNowPlayingMovies()
     }
 
+    private fun fetchTopRatedMovies() {
+        if (isFetchingTopRated || topRatedPage > totalTopRatedPages) return
+        isFetchingTopRated = true
+        if (topRatedPage == 1) _isLoading.value = true
 
-    private fun fetchTopRatedMovies(page: Int) {
         viewModelScope.launch(Dispatchers.IO) {
             try {
-                _isLoading.value = true
-                val response = getRecentMoviesUseCase.getRecentMovies(page = page)
+                val response = getRecentMoviesUseCase.getRecentMovies(page = topRatedPage)
                 if (response.isSuccessful) {
                     val movies = response.body()?.results ?: emptyList()
-                    _topRatedMovies.value = movies
-                    _topFiveMovies.value = getTopFiveMovies(movies)
-                    Log.d("MovieViewModel", "Movies: ${response.body()?.results}")
+                    _topRatedMovies.update { it + movies }
+                    _topFiveMovies.value = getTopFiveMovies(_topRatedMovies.value)
+                    totalTopRatedPages = response.body()?.total_pages ?: Int.MAX_VALUE
+                    topRatedPage++
                 } else {
                     Log.e(
                         "MovieViewModel",
@@ -69,69 +85,85 @@ class MovieViewModel @Inject constructor(
             } catch (e: Exception) {
                 Log.e("MovieViewModel", "Error fetching movies", e)
             } finally {
-                _isLoading.value = false
+                if (topRatedPage == 2) _isLoading.value = false
+                isFetchingTopRated = false
+            }
+        }
+    }
+
+    fun loadNextPage(category: String) {
+        when (category) {
+            "TopRated" -> fetchTopRatedMovies()
+            "Popular" -> fetchPopularMovies()
+            "Upcoming" -> fetchUpComingMovies()
+            "NowPlaying" -> fetchNowPlayingMovies()
+        }
+    }
+
+    private fun fetchPopularMovies() {
+        if (isFetchingPopular || popularPage > totalPopularPages) return
+        isFetchingPopular = true
+
+        viewModelScope.launch(Dispatchers.IO) {
+            try {
+                val response = getPopularMoviesUseCase.getPopularMovies(page = popularPage)
+                if (response.isSuccessful) {
+                    val movies = response.body()?.results ?: emptyList()
+                    _popularMovies.update { it + movies }
+                    totalPopularPages = response.body()?.total_pages ?: Int.MAX_VALUE
+                    popularPage++
+                }
+            } catch (e: Exception) {
+                Log.e("MovieViewModel", "Error fetching popular movies", e)
+            } finally {
+                isFetchingPopular = false
+            }
+        }
+    }
+
+    private fun fetchUpComingMovies() {
+        if (isFetchingUpcoming || upcomingPage > totalUpcomingPages) return
+        isFetchingUpcoming = true
+
+        viewModelScope.launch(Dispatchers.IO) {
+            try {
+                val response = getUpComingMoviesUseCase.getUpComingMovies(page = upcomingPage)
+                if (response.isSuccessful) {
+                    val movies = response.body()?.results ?: emptyList()
+                    _upcomingMovies.update { it + movies }
+                    totalUpcomingPages = response.body()?.total_pages ?: Int.MAX_VALUE
+                    upcomingPage++
+                }
+            } catch (e: Exception) {
+                Log.e("MovieViewModel", "Error fetching upcoming movies", e)
+            } finally {
+                isFetchingUpcoming = false
+            }
+        }
+    }
+
+    private fun fetchNowPlayingMovies() {
+        if (isFetchingNowPlaying || nowPlayingPage > totalNowPlayingPages) return
+        isFetchingNowPlaying = true
+
+        viewModelScope.launch(Dispatchers.IO) {
+            try {
+                val response = getNowPlayingMoviesUseCase.getNowPlayingMovies(page = nowPlayingPage)
+                if (response.isSuccessful) {
+                    val movies = response.body()?.results ?: emptyList()
+                    _nowPlayingMovies.update { it + movies }
+                    totalNowPlayingPages = response.body()?.total_pages ?: Int.MAX_VALUE
+                    nowPlayingPage++
+                }
+            } catch (e: Exception) {
+                Log.e("MovieViewModel", "Error fetching now playing movies", e)
+            } finally {
+                isFetchingNowPlaying = false
             }
         }
     }
 
     private fun getTopFiveMovies(movies: List<Result>): List<Result> {
         return movies.take(5)
-    }
-
-    private fun fetchNowPlayingMovies(page: Int) {
-        viewModelScope.launch(Dispatchers.IO) {
-            try {
-                val response = getNowPlayingMoviesUseCase.getNowPlayingMovies(page = page)
-                if (response.isSuccessful) {
-                    _nowPlayingMovies.value = response.body()?.results ?: emptyList()
-                    Log.d("MovieViewModel2", "Movies: ${response.body()?.results}")
-                } else {
-                    Log.e(
-                        "MovieViewModel2",
-                        "Failed to fetch movies: ${response.errorBody()?.string()}"
-                    )
-                }
-            } catch (e: Exception) {
-                Log.e("MovieViewModel2", "Error fetching movies", e)
-            }
-        }
-    }
-
-    private fun fetchPopularMovies(page: Int) {
-        viewModelScope.launch(Dispatchers.IO) {
-            try {
-                val response = getPopularMoviesUseCase.getPopularMovies(page = page)
-                if (response.isSuccessful) {
-                    _popularMovies.value = response.body()?.results ?: emptyList()
-                    Log.d("MovieViewModel3", "Movies: ${response.body()?.results}")
-                } else {
-                    Log.e(
-                        "MovieViewModel3",
-                        "Failed to fetch movies: ${response.errorBody()?.string()}"
-                    )
-                }
-            } catch (e: Exception) {
-                Log.e("MovieViewModel3", "Error fetching movies", e)
-            }
-        }
-    }
-
-    private fun fetchUpComingMovies(page: Int) {
-        viewModelScope.launch(Dispatchers.IO) {
-            try {
-                val response = getUpComingMoviesUseCase.getUpComingMovies(page = page)
-                if (response.isSuccessful) {
-                    _upcomingMovies.value = response.body()?.results ?: emptyList()
-                    Log.d("MovieViewModel4", "Movies: ${response.body()?.results}")
-                } else {
-                    Log.e(
-                        "MovieViewModel4",
-                        "Failed to fetch movies: ${response.errorBody()?.string()}"
-                    )
-                }
-            } catch (e: Exception) {
-                Log.e("MovieViewModel4", "Error fetching movies :", e)
-            }
-        }
     }
 }
