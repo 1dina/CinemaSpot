@@ -17,6 +17,7 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -31,7 +32,9 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -77,7 +80,7 @@ fun HomeScreen(
     HomeScreenContent(
         isLoading, topRatedMovies, nowPlayingMovies, upcomingMovies, popularMovies, topFiveMovies,
         onAnyItemClick = { route, movieId -> onNavigationCallBack(route, movieId) },
-        onSearchBarClick = { onSearchBarClick() })
+        onSearchBarClick = { onSearchBarClick() },movieViewModel)
 }
 
 @Composable
@@ -89,9 +92,10 @@ private fun HomeScreenContent(
     popularMovies: List<Result>,
     topFiveMovies: List<Result>,
     onAnyItemClick: (String, Int) -> Unit,
-    onSearchBarClick: () -> Unit
+    onSearchBarClick: () -> Unit,
+    movieViewModel: MovieViewModel
 ) {
-    var selectedCategoryIndex by remember { mutableIntStateOf(0) }
+    var selectedCategoryIndex by rememberSaveable { mutableIntStateOf(0) }
 
     val tabTitles = listOf("Now Playing", "Upcoming", "Top Rated", "Popular")
 
@@ -124,37 +128,39 @@ private fun HomeScreenContent(
                             .padding(top = 20.dp)
                     ) {
                         when (selectedCategoryIndex) {
-                            0 -> MoviesGrid(movies = nowPlayingMovies) { id ->
-                                onAnyItemClick(
-                                    AppRoutes.DETAILS, id
-                                )
+                            0 -> MoviesGrid(movies = nowPlayingMovies, onItemClick = { id ->
+                                onAnyItemClick(AppRoutes.DETAILS, id)
+                            }) {
+                                movieViewModel.loadNextPage("NowPlaying")
                             }
 
-                            1 -> MoviesGrid(movies = upcomingMovies) { id ->
-                                onAnyItemClick(
-                                    AppRoutes.DETAILS, id
-                                )
+                            1 -> MoviesGrid(movies = upcomingMovies, onItemClick = { id ->
+                                onAnyItemClick(AppRoutes.DETAILS, id)
+                            }) {
+                                movieViewModel.loadNextPage("Upcoming")
                             }
 
-                            2 -> MoviesGrid(movies = topRatedMovies) { id ->
-                                onAnyItemClick(
-                                    AppRoutes.DETAILS, id
-                                )
+                            2 -> MoviesGrid(movies = topRatedMovies, onItemClick = { id ->
+                                onAnyItemClick(AppRoutes.DETAILS, id)
+                            }) {
+                                movieViewModel.loadNextPage("TopRated")
                             }
 
-                            3 -> MoviesGrid(movies = popularMovies) { id ->
-                                onAnyItemClick(
-                                    AppRoutes.DETAILS, id
-                                )
+                            3 -> MoviesGrid(movies = popularMovies, onItemClick = { id ->
+                                onAnyItemClick(AppRoutes.DETAILS, id)
+                            }) {
+                                movieViewModel.loadNextPage("Popular")
                             }
                         }
+
+                    }
                     }
 
                 }
             }
         }
     }
-}
+
 
 @Composable
 private fun LoadingScreen() {
@@ -187,19 +193,29 @@ private fun MovieList(topFiveMovies: List<Result>, onItemClick: (Int) -> Unit) {
 }
 
 @Composable
-fun MoviesGrid(movies: List<Result>, onItemClick: (Int) -> Unit) {
+fun MoviesGrid(movies: List<Result>, onItemClick: (Int) -> Unit, loadNextPage: () -> Unit) {
+    val listState = rememberLazyGridState()
+
+    LaunchedEffect(listState) {
+        snapshotFlow { listState.layoutInfo.visibleItemsInfo.lastOrNull()?.index }
+            .collect { lastVisibleIndex ->
+                if (lastVisibleIndex != null && lastVisibleIndex >= movies.size - 1) {
+                    loadNextPage()
+                }
+            }
+    }
 
     LazyVerticalGrid(
         columns = GridCells.Fixed(3),
         modifier = Modifier.fillMaxSize(),
+        state = listState
     ) {
         items(movies) { movie ->
-            MovieCard(movie) { id ->
-                onItemClick(id)
-            }
+            MovieCard(movie) { id -> onItemClick(id) }
         }
     }
 }
+
 
 @Composable
 fun MovieCardWithNumber(
