@@ -1,5 +1,12 @@
 package com.example.cinemaspot.ui.screens.home
 
+import androidx.compose.animation.animateColor
+import androidx.compose.animation.core.RepeatMode
+import androidx.compose.animation.core.infiniteRepeatable
+import androidx.compose.animation.core.rememberInfiniteTransition
+import androidx.compose.animation.core.tween
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -31,6 +38,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
@@ -54,8 +62,10 @@ import com.example.cinemaspot.R
 import com.example.cinemaspot.data.Constants.BASE_IMAGE_URL
 import com.example.cinemaspot.data.models.movies.Result
 import com.example.cinemaspot.ui.common.CustomTabLayout
+import com.example.cinemaspot.ui.common.HomeScreenLoadingPlaceholder
 import com.example.cinemaspot.ui.routes.AppRoutes
 import com.example.cinemaspot.ui.theme.Poppins
+import kotlinx.coroutines.delay
 
 @Composable
 fun HomeScreen(
@@ -106,7 +116,7 @@ private fun HomeScreenContent(
             modifier = Modifier.fillMaxSize()
         ) {
             if (isLoading) {
-                LoadingScreen()
+                HomeScreenLoadingPlaceholder(tabTitles)
             } else {
                 TopHeader { onSearchBarClick() }
                 Spacer(modifier = Modifier.height(24.dp))
