@@ -7,7 +7,9 @@ import com.example.cinemaspot.data.models.movies.watchList.Result
 import com.example.cinemaspot.domain.usecase.GetWatchListMoviesUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -26,6 +28,22 @@ class WishListViewModel @Inject constructor(
     private var totalPage = 1
     private var currentPage = 1
     private var isFirstTime = true
+    init {
+        viewModelScope.launch {
+            WatchlistSyncCenter.events.collect { event ->
+                when (event) {
+                    is WatchlistEvent.MovieRemoved -> {
+                        _watchList.update { current ->
+                            current.filterNot { it.id == event.movieId }
+                        }
+                    }
+                    is WatchlistEvent.MovieAdded -> {
+                        getWatchListMovies()
+                    }
+                }
+            }
+        }
+    }
 
     fun loadNextPage() {
         if (!isLoading.value && currentPage > 1) {
@@ -62,4 +80,17 @@ class WishListViewModel @Inject constructor(
             }
         }
     }
+}
+object WatchlistSyncCenter {
+    private val _events = MutableSharedFlow<WatchlistEvent>(replay = 0)
+    val events: SharedFlow<WatchlistEvent> = _events
+
+    suspend fun emit(event: WatchlistEvent) {
+        _events.emit(event)
+    }
+}
+
+sealed class WatchlistEvent {
+    data class MovieRemoved(val movieId: Int) : WatchlistEvent()
+    data class MovieAdded(val movieId: Int) : WatchlistEvent()
 }
