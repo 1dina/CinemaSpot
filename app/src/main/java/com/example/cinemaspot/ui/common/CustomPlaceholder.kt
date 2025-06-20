@@ -138,6 +138,7 @@ fun WishListItemPlaceholder() {
                         .background(Color.Gray.copy(alpha = 0.2f))
                 )
             }
+            Spacer(modifier = Modifier.height(4.dp))
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Box(
                     modifier = Modifier
@@ -153,6 +154,7 @@ fun WishListItemPlaceholder() {
                         .background(Color.Gray.copy(alpha = 0.2f))
                 )
             }
+            Spacer(modifier = Modifier.height(4.dp))
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Box(
                     modifier = Modifier
