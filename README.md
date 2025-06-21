@@ -56,7 +56,7 @@ Cinema Spot provides a clean and engaging interface for discovering movies, sear
 
 - Overview of selected movie including:
   - Title, type, release date, duration
-  - Rating, genres, and crew
+  - Rating, genres, and cast
   - User comments and feedback
 
 ---
@@ -118,31 +118,29 @@ To run the app locally:
   - Rating
   - Duration
   - Genre
-  - Cast and crew
+  - Cast
 
 ---
 
 ## 📸 Screenshots
 
 ### 🏠 Home Screen
-<img src="https://github.com/your-repo/assets/home.png" width="300"/>
+<img src="https://github.com/user-attachments/assets/8f6a3596-8596-4eee-9ec8-037f0dbe4add" width="300"/>
 
 ### 🔍 Search Screen
-<img src="https://github.com/your-repo/assets/search.png" width="300"/>
+<img src="https://github.com/user-attachments/assets/110723fc-2461-4ccc-b2d6-c9bf0f493032" width="300"/>
 
 ### 🎞️ Watchlist Screen
-<img src="https://github.com/your-repo/assets/watchlist.png" width="300"/>
+<img src="https://github.com/user-attachments/assets/691ecb6f-2d50-4c89-add8-6275ffdffc32" width="300"/>
 
 ### 📄 Movie Details Screen
-<img src="https://github.com/your-repo/assets/details.png" width="300"/>
+<img src="https://github.com/user-attachments/assets/8f5bdfac-5572-4c08-a33b-7f2d5597c744" width="300"/>
 
 ---
 
 ## 🎥 Video Demonstration
 
-> _(Embed or link to a YouTube or local video demo here)_
-
-👉 [Watch Demo](https://your-demo-link.com)
+https://github.com/user-attachments/assets/b57f8582-382e-4cba-912d-844ef9edd23a
 
 ---
 
