@@ -91,7 +91,7 @@ To run the app locally:
 
 1. **Clone the repository**  
    ```bash
-   git clone https://github.com/your-username/CinemaSpot
+   git clone https://github.com/1dina/CinemaSpot
 2. **Open in Android Studio**
 3. **Sync Gradle and run the project**
 4. **Set up your API keys** in the appropriate config file
