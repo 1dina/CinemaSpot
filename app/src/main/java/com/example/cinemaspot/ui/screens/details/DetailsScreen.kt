@@ -72,6 +72,7 @@ fun DetailsScreen(
     }
     val movieDetails by detailsViewModel.movieDetails.collectAsState()
     val isLoading by detailsViewModel.isLoading.collectAsState()
+    val toastMessage by detailsViewModel.toastMessage.collectAsState()
     val imageBackgroundURL = BASE_IMAGE_URL + movieDetails?.backdrop_path
     val imagePosterURL = BASE_IMAGE_URL + movieDetails?.poster_path
     val tabTitles = listOf("About Movie", "Reviews", "Cast")
@@ -87,7 +88,10 @@ fun DetailsScreen(
     val trailerKey by detailsViewModel.trailerKey.collectAsState()
     val context = LocalContext.current
     val isLoadingAnotherPage by detailsViewModel.isLoadingAnotherPage.collectAsState()
-
+    if(toastMessage != null){
+        Toast.makeText(context, toastMessage, Toast.LENGTH_SHORT).show()
+        detailsViewModel.clearToastMessage()
+    }
 
 
     Box(

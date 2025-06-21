@@ -19,15 +19,20 @@ import javax.inject.Inject
 class WishListViewModel @Inject constructor(
     private val getWatchListMoviesUseCase: GetWatchListMoviesUseCase
 ) : ViewModel() {
+
     private val _watchList = MutableStateFlow<List<Result>>(emptyList())
     val watchList: StateFlow<List<Result>> = _watchList
+
     private val _isLoading = MutableStateFlow(true)
     val isLoading: StateFlow<Boolean> = _isLoading
+
     private val _isLoadingAnotherPage = MutableStateFlow(false)
     val isLoadingAnotherPage: StateFlow<Boolean> = _isLoadingAnotherPage
+
     private var totalPage = 1
     private var currentPage = 1
     private var isFirstTime = true
+
     init {
         viewModelScope.launch {
             WatchlistSyncCenter.events.collect { event ->
@@ -37,8 +42,9 @@ class WishListViewModel @Inject constructor(
                             current.filterNot { it.id == event.movieId }
                         }
                     }
+
                     is WatchlistEvent.MovieAdded -> {
-                        getWatchListMovies()
+                        getWatchListMovies(resetList = true)
                     }
                 }
             }
@@ -53,7 +59,7 @@ class WishListViewModel @Inject constructor(
         }
     }
 
-    fun getWatchListMovies(page: Int = 1) {
+    fun getWatchListMovies(page: Int = 1, resetList: Boolean = false) {
         viewModelScope.launch(Dispatchers.IO) {
             try {
                 val response = getWatchListMoviesUseCase.getMoviesListFromWatchList(page = page)
@@ -62,10 +68,18 @@ class WishListViewModel @Inject constructor(
                         totalPage = response.body()!!.total_pages
                         currentPage = totalPage
                         isFirstTime = false
-                        getWatchListMovies(currentPage)
-                    } else {
-                        _watchList.update { it -> it + response.body()!!.results.reversed() }
                     }
+
+                    if (resetList || page == totalPage) {
+                        _watchList.value = emptyList()
+                    }
+
+                    _watchList.update { current ->
+                        current + response.body()!!.results.reversed()
+                    }
+
+                    Log.d("Watchlist", "Current list size: ${_watchList.value.size}")
+
                 } else {
                     Log.e(
                         "Fetching watchlist movies",
@@ -74,13 +88,14 @@ class WishListViewModel @Inject constructor(
                 }
             } catch (e: Exception) {
                 Log.e("Fetching watchlist movies", "Error fetching credits", e)
-            }finally {
+            } finally {
                 _isLoading.value = false
                 _isLoadingAnotherPage.value = false
             }
         }
     }
 }
+
 object WatchlistSyncCenter {
     private val _events = MutableSharedFlow<WatchlistEvent>(replay = 0)
     val events: SharedFlow<WatchlistEvent> = _events

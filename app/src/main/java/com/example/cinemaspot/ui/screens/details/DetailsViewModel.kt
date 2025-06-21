@@ -17,7 +17,6 @@ import com.example.cinemaspot.ui.screens.wishList.WatchlistEvent
 import com.example.cinemaspot.ui.screens.wishList.WatchlistSyncCenter
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
@@ -50,6 +49,8 @@ class DetailsViewModel @Inject constructor(
     val trailerKey: StateFlow<String?> = _trailerKey
     private val _isLoadingAnotherPage = MutableStateFlow(false)
     val isLoadingAnotherPage: StateFlow<Boolean> = _isLoadingAnotherPage
+    private val _toastMessage = MutableStateFlow<String?>(null)
+    val toastMessage: StateFlow<String?> = _toastMessage
     private var totalPage = 1
     private var currentPage = 1
 
@@ -134,6 +135,7 @@ class DetailsViewModel @Inject constructor(
                 if (response.isSuccessful) {
                     _addToWatchlistStatus.value = "Success"
                     Log.e("AddingToWatchList", "You have successfully added this movie")
+                    _toastMessage.value = "Movie is successfully added to your watchlist"
                     WatchlistSyncCenter.emit(WatchlistEvent.MovieAdded(movieId))
                 } else {
                     _addToWatchlistStatus.value = "Failed"
@@ -196,6 +198,7 @@ fun getMovieTrailer(movieId: Int){
                 if (response.isSuccessful) {
                     _addToWatchlistStatus.value = "Removed"
                     Log.e("RemovingFromWatchList", "Successfully removed")
+                    _toastMessage.value = "Movie is successfully removed from your watchlist"
                     WatchlistSyncCenter.emit(WatchlistEvent.MovieRemoved(movieId))
                 } else {
                     _addToWatchlistStatus.value = "Failed"
@@ -206,6 +209,10 @@ fun getMovieTrailer(movieId: Int){
                 Log.e("RemovingFromWatchList", "Error: ", e)
             }
         }
+    }
+
+    fun clearToastMessage(){
+        _toastMessage.value = null
     }
 
 }
