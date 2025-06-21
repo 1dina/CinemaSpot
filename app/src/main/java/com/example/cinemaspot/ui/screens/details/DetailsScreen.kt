@@ -80,8 +80,10 @@ fun DetailsScreen(
     val movieCast by detailsViewModel.cast.collectAsState()
     var isBeingAdded =
         detailsViewModel.watchList.collectAsState().value?.contains(movieDetails?.id) == true
-    if (detailsViewModel.addToWatchlistStatus.collectAsState().value == "Success") isBeingAdded =
-        true
+    when (detailsViewModel.addToWatchlistStatus.collectAsState().value) {
+        "Success" -> isBeingAdded = true
+        "Removed" -> isBeingAdded = false
+    }
     val trailerKey by detailsViewModel.trailerKey.collectAsState()
     val context = LocalContext.current
     val isLoadingAnotherPage by detailsViewModel.isLoadingAnotherPage.collectAsState()
@@ -106,8 +108,11 @@ fun DetailsScreen(
                     HeaderUIWithBookmark("Detail", onClickBackButton = {
                         onBackIconNavigate()
                     }, onBookmarkClick = {
-                        if (!isBeingAdded)
+                        if (!isBeingAdded) {
                             detailsViewModel.addMovieToWatchList(movieId)
+                        } else {
+                            detailsViewModel.removeMovieFromWatchList(movieId)
+                        }
                     }, bookmarked = isBeingAdded)
                 }
                 Box(

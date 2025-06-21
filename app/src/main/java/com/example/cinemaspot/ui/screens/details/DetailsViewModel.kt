@@ -13,8 +13,11 @@ import com.example.cinemaspot.domain.usecase.GetMovieDetailsUseCase
 import com.example.cinemaspot.domain.usecase.GetMovieReviewsUseCase
 import com.example.cinemaspot.domain.usecase.GetWatchListMoviesUseCase
 import com.example.cinemaspot.domain.usecase.GetMovieTrailerUseCase
+import com.example.cinemaspot.ui.screens.wishList.WatchlistEvent
+import com.example.cinemaspot.ui.screens.wishList.WatchlistSyncCenter
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
@@ -131,6 +134,7 @@ class DetailsViewModel @Inject constructor(
                 if (response.isSuccessful) {
                     _addToWatchlistStatus.value = "Success"
                     Log.e("AddingToWatchList", "You have successfully added this movie")
+                    WatchlistSyncCenter.emit(WatchlistEvent.MovieAdded(movieId))
                 } else {
                     _addToWatchlistStatus.value = "Failed"
                     Log.e(
@@ -182,5 +186,27 @@ fun getMovieTrailer(movieId: Int){
             }
         }
     }
+
+    fun removeMovieFromWatchList(movieId: Int) {
+        viewModelScope.launch(Dispatchers.IO) {
+            try {
+                val response = addToWatchlistUseCase.addMovie(
+                    movie = WatchlistRequest(mediaId = movieId, isWatchlist = false)
+                )
+                if (response.isSuccessful) {
+                    _addToWatchlistStatus.value = "Removed"
+                    Log.e("RemovingFromWatchList", "Successfully removed")
+                    WatchlistSyncCenter.emit(WatchlistEvent.MovieRemoved(movieId))
+                } else {
+                    _addToWatchlistStatus.value = "Failed"
+                    Log.e("RemovingFromWatchList", "Failed: ${response.errorBody()?.string()}")
+                }
+            } catch (e: Exception) {
+                _addToWatchlistStatus.value = "Failed"
+                Log.e("RemovingFromWatchList", "Error: ", e)
+            }
+        }
+    }
+
 }
 
