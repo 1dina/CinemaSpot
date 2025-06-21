@@ -151,4 +151,4 @@ To run the app locally:
 **Project Maintainers:**
 
 - [Dina Fadel](https://github.com/1dina)
-- [Mohamed Esam](https://github.com/username)
+- [Mohamed Esam](https://github.com/MoEsam2)
